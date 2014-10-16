@@ -56,12 +56,9 @@ static void activate_action (GtkAction *action)
 
 int main (int argc, char **argv)
 {
-  printf("%d", test());
   GtkWidget *window;
   GtkWidget *menubar;
   GtkWidget *table;
-  GtkWidget *sw;
-  GtkWidget *contents;
   GtkWidget *statusbar;
   GtkWidget *indicator_menu;
   GtkActionGroup *action_group;
@@ -112,33 +109,6 @@ int main (int argc, char **argv)
                     GTK_EXPAND | GTK_FILL,   0,
                     0,                       0);
 
-  /* Document */
-  sw = gtk_scrolled_window_new (NULL, NULL);
-
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
-                                  GTK_POLICY_AUTOMATIC,
-                                  GTK_POLICY_AUTOMATIC);
-
-  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
-                                       GTK_SHADOW_IN);
-
-  gtk_table_attach (GTK_TABLE (table),
-                    sw,
-                    /* X direction */       /* Y direction */
-                    0, 1,                   3, 4,
-                    GTK_EXPAND | GTK_FILL,  GTK_EXPAND | GTK_FILL,
-                    0,                      0);
-
-  gtk_window_set_default_size (GTK_WINDOW (window),
-                               200, 200);
-
-  contents = gtk_text_view_new ();
-  gtk_widget_grab_focus (contents);
-
-  gtk_container_add (GTK_CONTAINER (sw),
-                     contents);
-
-
   /* Create statusbar */
   statusbar = gtk_statusbar_new ();
   gtk_table_attach (GTK_TABLE (table),
@@ -147,9 +117,6 @@ int main (int argc, char **argv)
                     0, 1,                   4, 5,
                     GTK_EXPAND | GTK_FILL,  0,
                     0,                      0);
-
-  /* Show the window */
-  gtk_widget_show_all (window);
 
   /* Indicator */
   indicator = app_indicator_new ("example-simple-client",

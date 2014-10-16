@@ -1,5 +1,5 @@
 #include "test.h"
 
-int test () {
+int test (void) {
 	return 1;
 }

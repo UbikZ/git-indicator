@@ -1,6 +1,6 @@
 #ifndef test_h
 #define test_h
 
-int test ();
+int test (void);
 
 #endif
