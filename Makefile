@@ -16,9 +16,10 @@ VERB=-O2 -Wchar-subscripts -Wcomment -Wformat=2 -Wimplicit-int \
 -Wpacked -Wredundant-decls -Wnested-externs -Winline -Wlong-long \
 -Wunreachable-code
 
-CFLAGS=$(VERB) -I$(IDIR) `pkg-config --libs --cflags gtk+-2.0 appindicator-0.1`
+CFLAGS=$(VERB) -I$(IDIR) \
+`pkg-config --libs --cflags gtk+-2.0 appindicator-0.1 libgit2`
 
-OFILES = indicator.o test.o
+OFILES = main.o git.o indicator.o
 OBJ = $(patsubst %,$(ODIR)/%,$(OFILES))
 
 $(ODIR)/%.o: $(CDIR)/%.c
@@ -30,4 +31,4 @@ indicator: $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(BDIR)/* $(ODIR)/*.o *~ core $(IDIR)/*~ 
+	rm -f $(BDIR)/* $(ODIR)/*.o *~ core $(IDIR)/*~

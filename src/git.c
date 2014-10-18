@@ -1,4 +1,4 @@
-#include "test.h"
+#include "git.h"
 
 int test (void) {
 	return 1;
