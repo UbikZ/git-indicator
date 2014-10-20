@@ -9,7 +9,7 @@ static GtkActionEntry entries[] = {
   { "Add",      "repository-new", "_New", "<control>N",
     "Add a new repository", G_CALLBACK (activate_action) },
   { "Status",     "repository-status", "_Status", "<control>S",
-    "Open a file", G_CALLBACK (activate_action) },
+    "Get repository status", G_CALLBACK (activate_action) },
   { "Quit",     "application-exit", "_Quit", "<control>Q",
     "Exit the application", G_CALLBACK (gtk_main_quit) },
 };
