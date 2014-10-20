@@ -36,8 +36,8 @@ static const gchar *ui_info =
 static void activate_action(GtkAction *action)
 {
         const gchar *name = gtk_action_get_name (action);
-        GtkWidget *dialog;
-        dialog = gtk_message_dialog_new (NULL,
+
+        GtkWidget *dialog = gtk_message_dialog_new (NULL,
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          GTK_MESSAGE_INFO,
                                          GTK_BUTTONS_CLOSE,
