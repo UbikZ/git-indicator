@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+static void activate_action(GtkAction *action);
+static GtkWidget* init_window (void);
+static GtkWidget* init_table (GtkWidget *window);
+static GtkUIManager* init_ui_manager (GtkWidget *window, GtkWidget *table);
+static void init_indicator (GtkUIManager *uim);
+
 static GtkActionEntry entries[] = {
   { "RepositoryMenu", NULL, "_Repository" },
   { "Add",      "repository-new", "_New", "<control>N",
@@ -118,7 +124,7 @@ static void init_indicator (GtkUIManager *uim)
         app_indicator_set_menu (indicator, GTK_MENU (indicator_menu));
 }
 
-int init_ui ()
+int init_ui (void)
 {
         GtkWidget *window = init_window ();
         GtkWidget *table = init_table (window);
