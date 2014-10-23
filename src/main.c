@@ -4,57 +4,42 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-void *displayView(void *ptr);
-void *listenStatus(void);
+void *listenStatus(void *ptr);
 
 typedef struct str_thdata
 {
-        int argc;
-        char **argv;
-        // other parameters
+        // parameters
 } thdata;
 
 int main (int argc, char **argv)
 {
-        pthread_t view, gitstatus;
+        pthread_t th_gitstatus;
         thdata data;
-        int pthret_view, pthret_status;
+        int th_gitstatus_return;
 
-        data.argc = argc;
-        data.argv = argv;
+        gtk_init (&argc, &argv);
 
-        pthret_view = pthread_create (&view, NULL, (void *) &displayView,
-                                     (void *) &data);
-        if (pthret_view) {
-                fprintf (stderr, "Return code: %d\n", pthret_view);
-                exit (EXIT_FAILURE);
-        }
+        init_ui();
 
-        pthret_status = pthread_create (&gitstatus, NULL,
+        th_gitstatus_return = pthread_create (&th_gitstatus, NULL,
                                         (void *) &listenStatus,
-                                        NULL);
-        if (pthret_status) {
-                fprintf (stderr, "Return code: %d\n", pthret_status);
+                                        (void *) &data);
+        if (th_gitstatus_return) {
+                fprintf (stderr, "Return code: %d\n", th_gitstatus_return);
                 exit (EXIT_FAILURE);
         }
 
-        pthread_join (view, NULL);
-        pthread_join (gitstatus, NULL);
+        pthread_join (th_gitstatus, NULL);
+
+        gtk_main ();
 
         return 0;
 }
 
-void *displayView (void *ptr)
+void *listenStatus (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
 
-        gtk_init (&data->argc, &data->argv);
-        init_ui();
-        gtk_main ();
-}
-
-void *listenStatus ()
-{
-
+        system("touch listen-status");
 }

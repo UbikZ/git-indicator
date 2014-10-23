@@ -16,7 +16,7 @@ OBJ = $(patsubst %,$(ODIR)/%,$(OFILES))
 $(ODIR)/%.o: $(CDIR)/%.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-indicator: $(OBJ)
+git-indicator: $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
 
 .PHONY: clean
