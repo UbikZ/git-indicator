@@ -25,7 +25,7 @@ int main (int argc, char **argv)
                                         (void *) &listenStatus,
                                         (void *) &data);
         if (th_gitstatus_return) {
-                fprintf (stderr, "Return code: %d\n", th_gitstatus_return);
+                fprintf (stderr, "ehread failed: %d\n", th_gitstatus_return);
                 exit (EXIT_FAILURE);
         }
 
@@ -41,5 +41,7 @@ void *listenStatus (void *ptr)
         thdata *data;
         data = (thdata *) ptr;
 
-        system("touch listen-status");
+        git_repository *repo =
+                open_repository ("/home/ubikz/Dev/Perso/indicator");
+        //status_data status = get_status (repo);
 }
