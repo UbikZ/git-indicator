@@ -4,6 +4,6 @@
 #include <gtk/gtk.h>
 #include <libappindicator/app-indicator.h>
 
-int init_ui (void);
+void init_ui (void);
 
 #endif

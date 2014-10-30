@@ -1,41 +1,41 @@
 #include "git.h"
 #include <git2.h>
 #include <stdio.h>
+#include <string.h>
 
-static int status_cb (const char *path,
-              	      unsigned int status_flags,
-                      void *payload);
-static void handle_errors (int error, char *msg);
+static void handle_errors (int error, char *msg, char *var);
 
-git_repository* open_repository (const char *repo_path)
+void open_repository (struct git *g)
 {
-	git_repository *repo = NULL;
-	handle_errors (git_repository_open(&repo, repo_path),
-		       "Can't open repository");
-
-	return repo;
+	handle_errors (git_repository_open_ext (&g->repo, g->repodir, 0, NULL),
+		       "Can't open repository",
+                       (char*) g->repodir);
 }
 
-status_data get_status (git_repository *repo)
+void get_status (struct git *g)
 {
-	status_data d = {0};
-	handle_errors (git_status_foreach(repo, status_cb, &d),
-		       "Can't get repository status");
-
-	return d;
+        handle_errors (git_status_list_new (&g->status, g->repo, &g->statusopt),
+                       "Can't get status for repository",
+                       (char*) g->repodir);
 }
 
-static int status_cb (const char *path,
-			unsigned int status_flags,
-		void *payload)
+void close_repository (struct git *g)
 {
-	status_data *d = (status_data*) payload;
+        git_repository_free (g->repo);
 }
 
-static void handle_errors (int error, char *msg)
+int parse_options (struct git *g)
+{
+        memset(g, 0, sizeof(*g));
+        g->repodir = ".";
+
+        return 0;
+}
+
+static void handle_errors (int error, char *msg, char *var)
 {
 	if (error < 0) {
-		fprintf(stderr, "Error %d: %s", error, msg);
-		exit(error);
+		fprintf (stderr, "Error %d: %s (%s)", error, msg, var);
+		exit (error);
 	}
 }

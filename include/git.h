@@ -3,12 +3,16 @@
 
 #include <git2.h>
 
-typedef struct
+struct git
 {
-        // ...
-} status_data;
+        git_repository *repo;
+        const char *repodir;
+        git_status_list *status;
+        git_status_options statusopt;
+};
 
-git_repository* open_repository (const char *repo_path);
-status_data get_status (git_repository *repo);
+void open_repository (struct git *g);
+void close_repository (struct git *g);
+int parse_options (struct git *g);
 
 #endif

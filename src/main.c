@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-void *listenStatus(void *ptr);
+void *listen_status(void *ptr);
 
 typedef struct str_thdata
 {
@@ -22,10 +22,10 @@ int main (int argc, char **argv)
         init_ui();
 
         th_gitstatus_return = pthread_create (&th_gitstatus, NULL,
-                                        (void *) &listenStatus,
+                                        (void *) &listen_status,
                                         (void *) &data);
         if (th_gitstatus_return) {
-                fprintf (stderr, "ehread failed: %d\n", th_gitstatus_return);
+                fprintf (stderr, "Thread failed: %d\n", th_gitstatus_return);
                 exit (EXIT_FAILURE);
         }
 
@@ -36,12 +36,18 @@ int main (int argc, char **argv)
         return 0;
 }
 
-void *listenStatus (void *ptr)
+void* listen_status (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
+        struct git g;
 
-        git_repository *repo =
-                open_repository ("/home/ubikz/Dev/Perso/indicator");
-        //status_data status = get_status (repo);
+        git_threads_init();
+
+        parse_options(&g);
+        open_repository (&g);
+        get_status (&g);
+        close_repository (&g);
+
+        git_threads_shutdown();
 }

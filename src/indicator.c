@@ -124,7 +124,7 @@ static void init_indicator (GtkUIManager *uim)
         app_indicator_set_menu (indicator, GTK_MENU (indicator_menu));
 }
 
-int init_ui (void)
+void init_ui (void)
 {
         GtkWidget *window = init_window ();
         GtkWidget *table = init_table (window);
