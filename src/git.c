@@ -35,7 +35,9 @@ int parse_options (struct git *g)
 static void handle_errors (int error, char *msg, char *var)
 {
 	if (error < 0) {
-		fprintf (stderr, "Error %d: %s (%s)", error, msg, var);
-		exit (error);
+                const git_error *e = giterr_last();
+		fprintf (stderr, "Error %d: %s \"%s\" (%s)\n", error, msg, var,
+                         (e && e->message) ? e->message : "???");
+		exit (1);
 	}
 }
