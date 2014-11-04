@@ -1,8 +1,8 @@
-#include "indicator.h"
-#include "git.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "indicator.h"
+#include "git.h"
 
 void *listen_status(void *ptr);
 
@@ -22,8 +22,8 @@ int main (int argc, char **argv)
         init_ui();
 
         th_gitstatus_return = pthread_create (&th_gitstatus, NULL,
-                                        (void *) &listen_status,
-                                        (void *) &data);
+                                              (void *) &listen_status,
+                                              (void *) &data);
         if (th_gitstatus_return) {
                 fprintf (stderr, "Thread failed: %d\n", th_gitstatus_return);
                 exit (EXIT_FAILURE);

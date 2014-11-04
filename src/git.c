@@ -1,7 +1,8 @@
-#include "git.h"
 #include <git2.h>
 #include <stdio.h>
 #include <string.h>
+#include "git.h"
+#include "file.h"
 
 static void handle_errors (int error, char *msg, char *var);
 

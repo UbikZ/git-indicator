@@ -10,7 +10,7 @@ VERB=-Wall
 CFLAGS=-lpthread -g $(VERB) -I$(IDIR) \
 `pkg-config --libs --cflags gtk+-2.0 appindicator-0.1 libgit2`
 
-OFILES = main.o git.o indicator.o
+OFILES = main.o git.o indicator.o file.o
 OBJ = $(patsubst %,$(ODIR)/%,$(OFILES))
 
 $(ODIR)/%.o: $(CDIR)/%.c
