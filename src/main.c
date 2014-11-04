@@ -29,8 +29,6 @@ int main (int argc, char **argv)
                 exit (EXIT_FAILURE);
         }
 
-        pthread_join (th_gitstatus, NULL);
-
         gtk_main ();
 
         return 0;
@@ -44,9 +42,11 @@ void* listen_status (void *ptr)
 
         git_threads_init();
 
-        parse_options(&g);
+        status_parse_options(&g);
         open_repository (&g);
+        revwalk_parse_options(&g);
         get_status (&g);
+        new_revwalk (&g);
         close_repository (&g);
 
         git_threads_shutdown();

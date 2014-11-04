@@ -31,3 +31,6 @@
 # Directories
 bin
 obj
+
+# Out
+status
