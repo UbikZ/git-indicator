@@ -64,20 +64,23 @@ int status_parse_options (struct git *g)
 
 int revwalk_parse_options (struct git *g)
 {
-        //git_revwalk_sorting(g->walk, GIT_SORT_TOPOLOGICAL | GIT_SORT_REVERSE);
-        push_range (g, "HEAD...origin/master", 0);
+        git_revwalk_sorting (g->walk, GIT_SORT_NONE);
+        push_range (g, "master..origin/master", 0);
 
         return 0;
 }
 
 static void push_commit(struct git *g, const git_oid *oid, int hide)
 {
+        char id[GIT_OID_HEXSZ + 1];
+        git_oid_tostr (id, sizeof (id), oid);
+
 	if (hide)
 		handle_errors (git_revwalk_hide (g->walk, oid),
-                               "Can't push commit (hide)", (char*) oid->id);
+                               "Can't push commit (hide)", (char*) id);
 	else
 		handle_errors (git_revwalk_push (g->walk, oid),
-                               "Can't push commit (!hide)", (char*) oid->id);
+                               "Can't push commit (!hide)", (char*) id);
 }
 
 static void push_range(struct git *g, const char *range, int hide)
@@ -105,11 +108,11 @@ static void parse_revision (struct git *g, const char *param)
 
         if ((rs.flags & GIT_REVPARSE_SINGLE) != 0) {
                 git_oid_tostr (str, sizeof (str), git_object_id (rs.from));
-                write_file ("rs_single", str, "w");
+                //write_file ("rs_single", str, "w");
                 git_object_free (rs.from);
         } else if ((rs.flags & GIT_REVPARSE_RANGE) != 0) {
                 git_oid_tostr (str, sizeof (str), git_object_id (rs.to));
-                write_file ("rs_range", str, "w");
+                //write_file ("rs_range", str, "w");
                 git_object_free (rs.to);
 
                 if ((rs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
@@ -120,11 +123,11 @@ static void parse_revision (struct git *g, const char *param)
                                        "Can't not find merge base",
                                        (char*) param);
                         git_oid_tostr (str, sizeof (str), &base);
-                        write_file ("rs_merge", str, "w");
+                        //write_file ("rs_merge", str, "w");
                 }
 
                 git_oid_tostr (str, sizeof (str), git_object_id (rs.from));
-                write_file ("rs_range", str, "w");
+                //write_file ("rs_range", str, "w");
                 git_object_free (rs.from);
         } else {
                 handle_errors (-1, "Invalid results from git_revparse",
