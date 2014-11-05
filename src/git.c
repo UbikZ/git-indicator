@@ -5,9 +5,9 @@
 #include "file.h"
 
 static void handle_errors (int error, char *msg, char *var);
-static int push_commit(struct git *g, const git_oid *oid, int hide);
-static int push_spec(struct git *g, const char *spec, int hide);
-static int push_range(struct git *g, const char *range, int hide);
+static void push_commit(struct git *g, const git_oid *oid, int hide);
+static void push_range(struct git *g, const char *range, int hide);
+static void parse_revision (struct git *g, const char *param);
 
 void open_repository (struct git *g)
 {
@@ -19,17 +19,18 @@ void open_repository (struct git *g)
 void new_revwalk (struct git *g)
 {
         git_oid oid;
-        char buf[GIT_OID_HEXSZ+1], buffer[1024];
+        int count = 0;
+        char buffer[1024];
 
         handle_errors (git_revwalk_new(&g->walk, g->repo),
                        "Can't allocate revwalk",
                        (char*) g->repodir);
         revwalk_parse_options (g);
+        strcpy (buffer, "");
         while (!git_revwalk_next (&oid, g->walk)) {
-                git_oid_fmt(buf, &oid);
-		buf[GIT_OID_HEXSZ] = '\0';
-		sprintf(buffer, "%s\n", buf);
+                count++;
         }
+        sprintf (buffer, "%d", count);
         write_file ("status", buffer, "w");
 }
 
@@ -54,7 +55,8 @@ int status_parse_options (struct git *g)
                 GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
                 GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
 
-        g->repodir = ".";
+        g->repodir = "/home/ubikz/Dev/Libraries/PHP-CS-Fixer";
+        //g->repodir = ".";
         g->statusopt = opts;
 
         return 0;
@@ -62,56 +64,72 @@ int status_parse_options (struct git *g)
 
 int revwalk_parse_options (struct git *g)
 {
+        //git_revwalk_sorting(g->walk, GIT_SORT_TOPOLOGICAL | GIT_SORT_REVERSE);
         push_range (g, "HEAD...origin/master", 0);
-        push_spec (g, "--count", 0);
 
         return 0;
 }
 
-static int push_commit(struct git *g, const git_oid *oid, int hide)
+static void push_commit(struct git *g, const git_oid *oid, int hide)
 {
-        int error = 0;
-
 	if (hide)
-		error = git_revwalk_hide(g->walk, oid);
+		handle_errors (git_revwalk_hide (g->walk, oid),
+                               "Can't push commit (hide)", (char*) oid->id);
 	else
-		error = git_revwalk_push(g->walk, oid);
-
-        return error;
+		handle_errors (git_revwalk_push (g->walk, oid),
+                               "Can't push commit (!hide)", (char*) oid->id);
 }
 
-static int push_spec(struct git *g, const char *spec, int hide)
-{
-	int error;
-	git_object *obj;
-
-	if ((error = git_revparse_single(&obj, g->repo, spec)) >= 0) {
-                error = push_commit (g, git_object_id (obj), hide);
-                git_object_free(obj);
-        }
-
-	return error;
-}
-
-static int push_range(struct git *g, const char *range, int hide)
+static void push_range(struct git *g, const char *range, int hide)
 {
 	git_revspec revspec;
-	int error = 0;
 
-	if ((error = git_revparse (&revspec, g->repo, range)))
-		return error;
+	handle_errors (git_revparse (&revspec, g->repo, range),
+                       "Can't parse revision",
+                       (char*) g->repodir);
 
-	if (revspec.flags & GIT_REVPARSE_MERGE_BASE)
-		return GIT_EINVALIDSPEC;
+        parse_revision (g, range);
+        push_commit (g, git_object_id (revspec.from), hide);
+        push_commit (g, git_object_id (revspec.to), hide);
 
-	if ((error = push_commit (g, git_object_id (revspec.from),
-                                  !hide)))
-                git_object_free(revspec.from);
+}
 
-	if ((error = push_commit (g, git_object_id (revspec.to), hide)))
-                git_object_free(revspec.to);
+static void parse_revision (struct git *g, const char *param)
+{
+        git_revspec rs;
+        char str[GIT_OID_HEXSZ + 1];
 
-	return error;
+        handle_errors (git_revparse (&rs, g->repo, param),
+                       "Can't parse revision",
+                       (char*) g->repodir);
+
+        if ((rs.flags & GIT_REVPARSE_SINGLE) != 0) {
+                git_oid_tostr (str, sizeof (str), git_object_id (rs.from));
+                write_file ("rs_single", str, "w");
+                git_object_free (rs.from);
+        } else if ((rs.flags & GIT_REVPARSE_RANGE) != 0) {
+                git_oid_tostr (str, sizeof (str), git_object_id (rs.to));
+                write_file ("rs_range", str, "w");
+                git_object_free (rs.to);
+
+                if ((rs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
+                        git_oid base;
+                        handle_errors (git_merge_base (&base, g->repo,
+                                                       git_object_id (rs.from),
+                                                       git_object_id (rs.to)),
+                                       "Can't not find merge base",
+                                       (char*) param);
+                        git_oid_tostr (str, sizeof (str), &base);
+                        write_file ("rs_merge", str, "w");
+                }
+
+                git_oid_tostr (str, sizeof (str), git_object_id (rs.from));
+                write_file ("rs_range", str, "w");
+                git_object_free (rs.from);
+        } else {
+                handle_errors (-1, "Invalid results from git_revparse",
+                               (char*) param);
+        }
 }
 
 static void handle_errors (int error, char *msg, char *var)

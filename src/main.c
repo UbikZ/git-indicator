@@ -44,9 +44,8 @@ void* listen_status (void *ptr)
 
         status_parse_options(&g);
         open_repository (&g);
-        revwalk_parse_options(&g);
-        get_status (&g);
         new_revwalk (&g);
+        get_status (&g);
         close_repository (&g);
 
         git_threads_shutdown();
