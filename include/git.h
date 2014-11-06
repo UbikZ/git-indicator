@@ -3,6 +3,8 @@
 
 #include <git2.h>
 
+#define REPO_NAME_LEN 128
+
 struct git
 {
         git_repository *repo;

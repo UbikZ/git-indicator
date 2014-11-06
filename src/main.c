@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <pthread.h>
 #include "indicator.h"
+#include "file.h"
 #include "git.h"
 
 void *listen_status(void *ptr);
@@ -38,15 +40,21 @@ void* listen_status (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
+        int n, i;
+        char **repopath = read_file (".conf", &n);
 
-        // Init {todo: make a function}
-        data->g.repodir = "/home/ubikz/Dev/Libraries/PHP-CS-Fixer";
-        data->g.revrange = "master..origin/master";
+        for (i = 0; i < n; i++) {
+                // Init {todo: make a function}
+                data->g.repodir = (char*) malloc (REPO_NAME_LEN);
+                strcpy ((char*) data->g.repodir, repopath[i]);
+                data->g.revrange = "master..origin/master";
+                // -
+                
+                git_threads_init();
+                open_repository (&data->g);
+                check_diff_revision (&data->g);
+                close_repository (&data->g);
 
-        git_threads_init();
-        open_repository (&data->g);
-        check_diff_revision (&data->g);
-        close_repository (&data->g);
-
-        git_threads_shutdown();
+                git_threads_shutdown();
+        }
 }

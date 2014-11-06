@@ -34,7 +34,7 @@ void check_diff_revision (struct git *g)
                 count++;
         }
         sprintf (buffer, "%d", count);
-        write_file ("_status", buffer, "w");
+        write_file ("_status", buffer, "a");
 }
 
 void get_status (struct git *g)
