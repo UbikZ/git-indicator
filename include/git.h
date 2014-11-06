@@ -8,14 +8,14 @@ struct git
         git_repository *repo;
         const char *repodir;
         git_revwalk *walk;
+        const char *revrange;
         git_status_list *status;
         git_status_options statusopt;
 };
 
 void open_repository (struct git *g);
-void new_revwalk (struct git *g);
+void check_diff_revision (struct git *g);
 void close_repository (struct git *g);
-int status_parse_options (struct git *g);
-int revwalk_parse_options (struct git *g);
+void get_status (struct git *g);
 
 #endif

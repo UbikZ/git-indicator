@@ -39,12 +39,13 @@ void* listen_status (void *ptr)
         thdata *data;
         data = (thdata *) ptr;
 
-        git_threads_init();
+        // Init {todo: make a function}
+        data->g.repodir = "/home/ubikz/Dev/Libraries/PHP-CS-Fixer";
+        data->g.revrange = "master..origin/master";
 
-        status_parse_options(&data->g);
+        git_threads_init();
         open_repository (&data->g);
-        new_revwalk (&data->g);
-        //get_status (&data->g);
+        check_diff_revision (&data->g);
         close_repository (&data->g);
 
         git_threads_shutdown();

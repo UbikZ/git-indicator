@@ -8,6 +8,8 @@ static void handle_errors (int error, char *msg, char *var);
 static void push_commit(struct git *g, const git_oid *oid, int hide);
 static void push_range(struct git *g, const char *range, int hide);
 static void parse_revision (struct git *g, const char *param);
+static int status_parse_options (struct git *g);
+static int revwalk_parse_options (struct git *g);
 
 void open_repository (struct git *g)
 {
@@ -16,7 +18,7 @@ void open_repository (struct git *g)
                        (char*) g->repodir);
 }
 
-void new_revwalk (struct git *g)
+void check_diff_revision (struct git *g)
 {
         git_oid oid;
         int count = 0;
@@ -37,6 +39,7 @@ void new_revwalk (struct git *g)
 
 void get_status (struct git *g)
 {
+        status_parse_options(g);
         handle_errors (git_status_list_new (&g->status, g->repo, &g->statusopt),
                        "Can't get status for repository",
                        (char*) g->repodir);
@@ -47,7 +50,7 @@ void close_repository (struct git *g)
         git_repository_free (g->repo);
 }
 
-int status_parse_options (struct git *g)
+static int status_parse_options (struct git *g)
 {
         memset(g, 0, sizeof(*g));
         git_status_options opts = GIT_STATUS_OPTIONS_INIT;
@@ -56,19 +59,17 @@ int status_parse_options (struct git *g)
                 GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
                 GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
 
-        g->repodir = "/home/ubikz/Dev/Libraries/PHP-CS-Fixer";
-        //g->repodir = ".";
         g->statusopt = opts;
 
         return 0;
 }
 
-int revwalk_parse_options (struct git *g)
+static int revwalk_parse_options (struct git *g)
 {
         git_revwalk_sorting (g->walk,
                              GIT_SORT_TOPOLOGICAL |
                              (GIT_SORT_NONE & GIT_SORT_REVERSE));
-        push_range (g, "master..origin/master", 0);
+        push_range (g, g->revrange, 0);
 
         return 0;
 }
