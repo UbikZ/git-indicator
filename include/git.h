@@ -13,6 +13,7 @@ struct git
         git_status_options statusopt;
 };
 
+void init_configuration (struct git **g);
 void open_repository (struct git *g);
 void check_diff_revision (struct git *g);
 void close_repository (struct git *g);
