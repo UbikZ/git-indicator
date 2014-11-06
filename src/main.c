@@ -45,11 +45,12 @@ void* listen_status (void *ptr)
 
         for (i = 0; i < n; i++) {
                 // Init {todo: make a function}
+                memset(&data->g, 0, sizeof(data->g));
                 data->g.repodir = (char*) malloc (REPO_NAME_LEN);
                 strcpy ((char*) data->g.repodir, repopath[i]);
                 data->g.revrange = "master..origin/master";
                 // -
-                
+
                 git_threads_init();
                 open_repository (&data->g);
                 check_diff_revision (&data->g);

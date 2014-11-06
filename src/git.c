@@ -52,7 +52,6 @@ void close_repository (struct git *g)
 
 static int status_parse_options (struct git *g)
 {
-        memset(g, 0, sizeof(*g));
         git_status_options opts = GIT_STATUS_OPTIONS_INIT;
         opts.show = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
         opts.flags = GIT_STATUS_OPT_INCLUDE_UNTRACKED |
@@ -78,7 +77,6 @@ static void push_commit(struct git *g, const git_oid *oid, int hide)
 {
         char id[GIT_OID_HEXSZ + 1];
         git_oid_tostr (id, sizeof (id), oid);
-        write_file ("_revspec", id, "a");
 
 	if (hide)
 		handle_errors (git_revwalk_hide (g->walk, oid),
