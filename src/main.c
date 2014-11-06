@@ -8,7 +8,7 @@ void *listen_status(void *ptr);
 
 typedef struct str_thdata
 {
-        // parameters
+        struct git g;
 } thdata;
 
 int main (int argc, char **argv)
@@ -38,15 +38,14 @@ void* listen_status (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
-        struct git g;
 
         git_threads_init();
 
-        status_parse_options(&g);
-        open_repository (&g);
-        new_revwalk (&g);
-        get_status (&g);
-        close_repository (&g);
+        status_parse_options(&data->g);
+        open_repository (&data->g);
+        new_revwalk (&data->g);
+        //get_status (&data->g);
+        close_repository (&data->g);
 
         git_threads_shutdown();
 }

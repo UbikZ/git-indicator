@@ -27,11 +27,12 @@ void new_revwalk (struct git *g)
                        (char*) g->repodir);
         revwalk_parse_options (g);
         strcpy (buffer, "");
+
         while (!git_revwalk_next (&oid, g->walk)) {
                 count++;
         }
         sprintf (buffer, "%d", count);
-        write_file ("status", buffer, "w");
+        write_file ("_status", buffer, "w");
 }
 
 void get_status (struct git *g)
@@ -64,7 +65,9 @@ int status_parse_options (struct git *g)
 
 int revwalk_parse_options (struct git *g)
 {
-        git_revwalk_sorting (g->walk, GIT_SORT_NONE);
+        git_revwalk_sorting (g->walk,
+                             GIT_SORT_TOPOLOGICAL |
+                             (GIT_SORT_NONE & GIT_SORT_REVERSE));
         push_range (g, "master..origin/master", 0);
 
         return 0;
@@ -74,6 +77,7 @@ static void push_commit(struct git *g, const git_oid *oid, int hide)
 {
         char id[GIT_OID_HEXSZ + 1];
         git_oid_tostr (id, sizeof (id), oid);
+        write_file ("_revspec", id, "a");
 
 	if (hide)
 		handle_errors (git_revwalk_hide (g->walk, oid),
@@ -92,27 +96,23 @@ static void push_range(struct git *g, const char *range, int hide)
                        (char*) g->repodir);
 
         parse_revision (g, range);
-        push_commit (g, git_object_id (revspec.from), hide);
+        push_commit (g, git_object_id (revspec.from), !hide);
         push_commit (g, git_object_id (revspec.to), hide);
-
+        git_object_free (revspec.from);
+        git_object_free (revspec.to);
 }
 
 static void parse_revision (struct git *g, const char *param)
 {
         git_revspec rs;
-        char str[GIT_OID_HEXSZ + 1];
 
         handle_errors (git_revparse (&rs, g->repo, param),
                        "Can't parse revision",
                        (char*) g->repodir);
 
         if ((rs.flags & GIT_REVPARSE_SINGLE) != 0) {
-                git_oid_tostr (str, sizeof (str), git_object_id (rs.from));
-                //write_file ("rs_single", str, "w");
                 git_object_free (rs.from);
         } else if ((rs.flags & GIT_REVPARSE_RANGE) != 0) {
-                git_oid_tostr (str, sizeof (str), git_object_id (rs.to));
-                //write_file ("rs_range", str, "w");
                 git_object_free (rs.to);
 
                 if ((rs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
@@ -122,12 +122,8 @@ static void parse_revision (struct git *g, const char *param)
                                                        git_object_id (rs.to)),
                                        "Can't not find merge base",
                                        (char*) param);
-                        git_oid_tostr (str, sizeof (str), &base);
-                        //write_file ("rs_merge", str, "w");
                 }
 
-                git_oid_tostr (str, sizeof (str), git_object_id (rs.from));
-                //write_file ("rs_range", str, "w");
                 git_object_free (rs.from);
         } else {
                 handle_errors (-1, "Invalid results from git_revparse",

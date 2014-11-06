@@ -22,4 +22,4 @@ git-indicator: $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(BDIR)/* $(ODIR)/*.o *~ core $(IDIR)/*~
+	rm -f $(BDIR)/* $(ODIR)/*.o *~ core $(IDIR)/*~ _*
