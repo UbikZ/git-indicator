@@ -6,7 +6,7 @@
 #include "file.h"
 #include "git.h"
 
-void *listen_status(void *ptr);
+void *listen(void *ptr);
 
 typedef struct str_thdata
 {
@@ -15,19 +15,19 @@ typedef struct str_thdata
 
 int main (int argc, char **argv)
 {
-        pthread_t th_gitstatus;
+        pthread_t th_listen;
+        int th_listen_return;
         thdata data;
-        int th_gitstatus_return;
 
         gtk_init (&argc, &argv);
 
         init_ui();
 
-        th_gitstatus_return = pthread_create (&th_gitstatus, NULL,
-                                              (void *) &listen_status,
+        th_listen_return = pthread_create (&th_listen, NULL,
+                                              (void *) &listen,
                                               (void *) &data);
-        if (th_gitstatus_return) {
-                fprintf (stderr, "Thread failed: %d\n", th_gitstatus_return);
+        if (th_listen_return) {
+                fprintf (stderr, "Thread failed: %d\n", th_listen_return);
                 exit (EXIT_FAILURE);
         }
 
@@ -36,7 +36,7 @@ int main (int argc, char **argv)
         return 0;
 }
 
-void* listen_status (void *ptr)
+void* listen (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
@@ -52,6 +52,7 @@ void* listen_status (void *ptr)
                 // -
 
                 git_threads_init();
+
                 open_repository (&data->g);
                 check_diff_revision (&data->g);
                 close_repository (&data->g);

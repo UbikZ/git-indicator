@@ -15,12 +15,6 @@ struct git
         git_status_options statusopt;
 };
 
-struct dl_data {
-  git_remote *remote;
-  int ret;
-  int finished;
-};
-
 void open_repository (struct git *g);
 void fetch_repository (struct git *g);
 void check_diff_revision (struct git *g);

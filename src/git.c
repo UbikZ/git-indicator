@@ -4,6 +4,12 @@
 #include "git.h"
 #include "file.h"
 
+static struct dl_data {
+  git_remote *remote;
+  int ret;
+  int finished;
+};
+
 static void handle_errors (int error, char *msg, char *var);
 static void push_commit(struct git *g, const git_oid *oid, int hide);
 static void push_range(struct git *g, const char *range, int hide);
@@ -16,6 +22,11 @@ void open_repository (struct git *g)
 	handle_errors (git_repository_open_ext (&g->repo, g->repodir, 0, NULL),
 		       "Can't open repository",
                        (char*) g->repodir);
+}
+
+void fetch_repository (struct git *g)
+{
+
 }
 
 void check_diff_revision (struct git *g)
