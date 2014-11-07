@@ -2,6 +2,8 @@
 #define git_h
 
 #include <git2.h>
+#include <stdio.h>
+#include <string.h>
 
 #define REPO_NAME_LEN 128
 

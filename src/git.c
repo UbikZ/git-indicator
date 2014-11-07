@@ -1,5 +1,6 @@
 #include <git2.h>
 #include <stdio.h>
+#include <pthread.h>
 #include <string.h>
 #include "git.h"
 #include "file.h"
@@ -16,6 +17,10 @@ static void push_range(struct git *g, const char *range, int hide);
 static void parse_revision (struct git *g, const char *param);
 static int status_parse_options (struct git *g);
 static int revwalk_parse_options (struct git *g);
+static int credential_cb (git_cred **out, const char *url,
+                   const char *username_from_url, unsigned int allowed_types,
+                   void *payload);
+static void *download (void *ptr);
 
 void open_repository (struct git *g)
 {
@@ -26,7 +31,52 @@ void open_repository (struct git *g)
 
 void fetch_repository (struct git *g)
 {
+        git_remote *remote = NULL;
+        char *loadrev = "origin", buffer[1024];
+        const git_transfer_progress *stats;
+        struct dl_data data;
+        git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
+        pthread_t worker;
 
+        sprintf(buffer, "Fetching %s for repository %s\n", loadrev, g->repodir);
+        write_file ("_fetch", buffer, "a");
+
+        handle_errors (git_remote_load (&remote, g->repo, loadrev),
+                       "Can't load the remote", loadrev);
+
+        callbacks.credentials = credential_cb;
+        git_remote_set_callbacks (remote, &callbacks);
+
+        data.remote = remote;
+        data.ret = 0;
+        data.finished = 0;
+
+        stats = git_remote_stats (remote);
+
+        pthread_create (&worker, NULL, download, &data);
+
+        handle_errors (data.ret, "Fail downloading datas", NULL);
+        pthread_join(worker, NULL);
+
+        if (stats->local_objects > 0) {
+                sprintf(buffer,
+                        "Received %d/%d objects in %zu bytes (used %d local objects)\n",
+                        stats->indexed_objects, stats->total_objects,
+                        stats->received_bytes, stats->local_objects);
+        } else {
+                sprintf(buffer, "Received %d/%d objects in %zu bytes\n",
+                        stats->indexed_objects, stats->total_objects,
+                        stats->received_bytes);
+        }
+
+        write_file ("_fetch", buffer, "a");
+
+        git_remote_disconnect (remote);
+
+        handle_errors (git_remote_update_tips (remote, NULL, NULL),
+                       "Can't update tips repository", (char*) g->repodir);
+
+        git_remote_free (remote);
 }
 
 void check_diff_revision (struct git *g)
@@ -101,7 +151,7 @@ static void push_range(struct git *g, const char *range, int hide)
 {
         char idfrom[GIT_OID_HEXSZ + 1], idto[GIT_OID_HEXSZ + 1];
         git_revspec revspec;
-        git_oid *oid_from, *oid_to;
+        const git_oid *oid_from, *oid_to;
 
 	handle_errors (git_revparse (&revspec, g->repo, range),
                        "Can't parse revision",
@@ -151,6 +201,29 @@ static void parse_revision (struct git *g, const char *param)
                 handle_errors (-1, "Invalid results from git_revparse",
                                (char*) param);
         }
+}
+
+static int credential_cb (git_cred **out, const char *url,
+                  const char *username_from_url, unsigned int allowed_types,
+                  void *payload)
+{
+        char username[128] = "test@test.com";
+	char password[128] = "test";
+
+	return git_cred_userpass_plaintext_new (out, username, password);
+}
+
+static void *download (void *ptr)
+{
+        struct dl_data *data = (struct dl_data *) ptr;
+        handle_errors (git_remote_connect (data->remote, GIT_DIRECTION_FETCH),
+                       "Can't connect for fetch", NULL);
+        handle_errors (git_remote_download (data->remote, NULL),
+                       "Can't cownload datas for fetch", NULL);
+        data->ret = 0;
+        data->finished = 1;
+
+        return &data->ret;
 }
 
 static void handle_errors (int error, char *msg, char *var)

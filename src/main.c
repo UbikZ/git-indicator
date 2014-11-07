@@ -42,7 +42,7 @@ void* listen (void *ptr)
         data = (thdata *) ptr;
         int n, i;
         char **repopath = read_file (".conf", &n);
-
+        
         for (i = 0; i < n; i++) {
                 // Init {todo: make a function}
                 memset(&data->g, 0, sizeof(data->g));
@@ -54,6 +54,7 @@ void* listen (void *ptr)
                 git_threads_init();
 
                 open_repository (&data->g);
+                fetch_repository (&data->g);
                 check_diff_revision (&data->g);
                 close_repository (&data->g);
 
