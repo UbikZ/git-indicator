@@ -88,15 +88,27 @@ static void push_commit(struct git *g, const git_oid *oid, int hide)
 
 static void push_range(struct git *g, const char *range, int hide)
 {
-	git_revspec revspec;
+        char idfrom[GIT_OID_HEXSZ + 1], idto[GIT_OID_HEXSZ + 1];
+        git_revspec revspec;
+        git_oid *oid_from, *oid_to;
 
 	handle_errors (git_revparse (&revspec, g->repo, range),
                        "Can't parse revision",
                        (char*) g->repodir);
 
         parse_revision (g, range);
-        push_commit (g, git_object_id (revspec.from), !hide);
-        push_commit (g, git_object_id (revspec.to), hide);
+        oid_from = git_object_id (revspec.from);
+        oid_to = git_object_id (revspec.to);
+
+
+        git_oid_tostr (idfrom, sizeof (idfrom), oid_from);
+        git_oid_tostr (idto, sizeof (idto), oid_to);
+
+        if (strcmp (idfrom, idto) != 0) {
+                push_commit (g, oid_from, !hide);
+                push_commit (g, oid_to, hide);
+        }
+
         git_object_free (revspec.from);
         git_object_free (revspec.to);
 }
