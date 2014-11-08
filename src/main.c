@@ -42,10 +42,10 @@ void* listen (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
-        int n, i, delta = 10, size = delta;
+        int n, i;
 
-        data->g = (struct git*) malloc (size * sizeof (struct git));
         char **repopath = read_file (".conf", &n);
+        data->g = (struct git*) malloc (n * sizeof (struct git));
 
         for (i = 0; i < n; i++) {
                 // Init {todo: make a function}
@@ -54,11 +54,6 @@ void* listen (void *ptr)
                 strcpy ((char*) data->g[i].repodir, repopath[i]);
                 data->g[i].revrange = "master..origin/master";
                 // -
-
-                if (i > delta) {
-                        size += delta;
-                        data->g = (struct git*) realloc (data->g, size * sizeof (struct git));
-                }
 
                 git_threads_init();
 
