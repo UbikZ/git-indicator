@@ -6,12 +6,13 @@
 #include "file.h"
 #include "git.h"
 
-void *listen(void *ptr);
-
 typedef struct str_thdata
 {
-        struct git g;
+        struct git *g;
 } thdata;
+
+
+void *listen(void *ptr);
 
 int main (int argc, char **argv)
 {
@@ -26,6 +27,7 @@ int main (int argc, char **argv)
         th_listen_return = pthread_create (&th_listen, NULL,
                                               (void *) &listen,
                                               (void *) &data);
+
         if (th_listen_return) {
                 fprintf (stderr, "Thread failed: %d\n", th_listen_return);
                 exit (EXIT_FAILURE);
@@ -40,23 +42,30 @@ void* listen (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
-        int n, i;
+        int n, i, delta = 10, size = delta;
+
+        data->g = (struct git*) malloc (size * sizeof (struct git));
         char **repopath = read_file (".conf", &n);
-        
+
         for (i = 0; i < n; i++) {
                 // Init {todo: make a function}
-                memset(&data->g, 0, sizeof(data->g));
-                data->g.repodir = (char*) malloc (REPO_NAME_LEN);
-                strcpy ((char*) data->g.repodir, repopath[i]);
-                data->g.revrange = "master..origin/master";
+                memset(&data->g[i], 0, sizeof(struct git));
+                data->g[i].repodir = (char*) malloc (REPO_NAME_LEN);
+                strcpy ((char*) data->g[i].repodir, repopath[i]);
+                data->g[i].revrange = "master..origin/master";
                 // -
+
+                if (i > delta) {
+                        size += delta;
+                        data->g = (struct git*) realloc (data->g, size * sizeof (struct git));
+                }
 
                 git_threads_init();
 
-                open_repository (&data->g);
-                fetch_repository (&data->g);
-                check_diff_revision (&data->g);
-                close_repository (&data->g);
+                open_repository (&data->g[i]);
+                fetch_repository (&data->g[i]);
+                check_diff_revision (&data->g[i]);
+                close_repository (&data->g[i]);
 
                 git_threads_shutdown();
         }

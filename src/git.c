@@ -94,6 +94,8 @@ void check_diff_revision (struct git *g)
         while (!git_revwalk_next (&oid, g->walk)) {
                 count++;
         }
+        g->diffcommit = count;
+
         sprintf (buffer, "%d", count);
         write_file ("_status", buffer, "a");
 }

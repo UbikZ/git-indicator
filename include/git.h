@@ -15,6 +15,7 @@ struct git
         const char *revrange;
         git_status_list *status;
         git_status_options statusopt;
+        int diffcommit;
 };
 
 void open_repository (struct git *g);
