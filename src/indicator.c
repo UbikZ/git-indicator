@@ -1,5 +1,3 @@
-#include "indicator.h"
-#include "git.h"
 #include <gtk/gtk.h>
 #include <libappindicator/app-indicator.h>
 #include <stdlib.h>
@@ -7,6 +5,8 @@
 #include <unistd.h>
 #include <gtk/gtk.h>
 #include <libappindicator/app-indicator.h>
+#include "indicator.h"
+#include "git.h"
 
 static GtkWidget **item;
 static AppIndicator *indicator;
@@ -70,8 +70,9 @@ static gboolean update (thdata *data)
                 }
 
                 if (data->count != sync)
-                        app_indicator_set_status (indicator,
-                                                  APP_INDICATOR_STATUS_ATTENTION);
+                        app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ATTENTION);
+                else
+                        app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
 
                 sprintf (buffer, "%d%%", (max * sync / (data->count) ));
                 gchar *level = (gchar *) buffer;
