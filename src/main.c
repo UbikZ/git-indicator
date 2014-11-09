@@ -37,27 +37,46 @@ void* listen (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
-        int n, i;
+        int n, i, size = REALLOC_DELTA;
 
-        char **repopath = read_file (".conf", &n);
-        data->g = (struct git*) malloc (n * sizeof (struct git));
-        data->count = n;
+        data->g = (struct git*) malloc (size * sizeof (struct git));
 
-        for (i = 0; i < n; i++) {
-                // Init {todo: make a function}
-                memset(&data->g[i], 0, sizeof(struct git));
-                data->g[i].repodir = (char*) malloc (REPO_NAME_LEN);
-                strcpy ((char*) data->g[i].repodir, repopath[i]);
-                data->g[i].revrange = "master..origin/master";
-                // -
+        while (1) {
+                // Lock gtk update
+                data->mutex = 1;
 
-                git_threads_init();
+                char **repopath = read_file (".conf", &n);
+                data->count = n;
 
-                open_repository (&data->g[i]);
-                fetch_repository (&data->g[i]);
-                check_diff_revision (&data->g[i]);
-                close_repository (&data->g[i]);
+                for (i = 0; i < n; i++) {
+                        if (i > REALLOC_DELTA) {
+                                size += REALLOC_DELTA;
+                                data->g = (struct git*) realloc (data->g,
+                                                                 size * sizeof (struct git));
+                        }
 
-                git_threads_shutdown();
+                        // Init {todo: make a function}
+                        memset(&data->g[i], 0, sizeof(struct git));
+                        data->g[i].repodir = (char*) malloc (REPO_NAME_LEN);
+                        strcpy ((char*) data->g[i].repodir, repopath[i]);
+                        data->g[i].revrange = "master..origin/master";
+                        // -
+
+                        git_threads_init();
+
+                        open_repository (&data->g[i]);
+                        fetch_repository (&data->g[i]);
+                        check_diff_revision (&data->g[i]);
+                        close_repository (&data->g[i]);
+
+                        git_threads_shutdown();
+                }
+
+                // Unlock gtk update
+                data->mutex = 0;
+
+                free (repopath);
+                sleep (5);
         }
+
 }

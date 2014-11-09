@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "file.h"
 #include "git.h"
+#include "common.h"
 
 static void handle_errors (FILE *file, char *filename);
 
@@ -23,7 +24,7 @@ void write_file (char *file_path, char *message, char *rights)
 
 char **read_file (char *file_path, int *n)
 {
-        int i = 0, delta = 10, size = delta;
+        int i = 0, delta = REALLOC_DELTA, size = delta;
         char **repopath, repo[REPO_NAME_LEN];
         FILE *file = open_file (file_path, "r");
 

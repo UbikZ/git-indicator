@@ -11,35 +11,7 @@
 static GtkWidget **item;
 static AppIndicator *indicator;
 
-static gboolean update (thdata *data)
-{
-        int i, sync = 0, max = 100;
-        char buffer[5];
-
-        for (i = 0; i < data->count; i++) {
-                gchar *item_label = g_strdup_printf ("%s - diff[+%d]",
-                                                     data->g[i].repodir,
-                                                     data->g[i].diffcommit);
-                gtk_menu_item_set_label (GTK_MENU_ITEM (item[i]), item_label);
-                g_free(item_label);
-
-                if (data->g[i].diffcommit == 0)
-                        sync++;
-        }
-
-        if (data->count != sync)
-                app_indicator_set_status (indicator,
-                                          APP_INDICATOR_STATUS_ATTENTION);
-
-        sprintf (buffer, "%d%%", (max * sync / (data->count) ));
-        gchar *level = (gchar *) buffer;
-        gchar *indicator_label = g_strconcat (level, NULL);
-
-        app_indicator_set_label (indicator, indicator_label, "");
-        g_free (indicator_label);
-
-    return TRUE;
-}
+static gboolean update (thdata *data);
 
 int init_ui (thdata *data)
 {
@@ -69,11 +41,45 @@ int init_ui (thdata *data)
         app_indicator_set_icon_full (indicator, icon_act, "");
         app_indicator_set_attention_icon_full (indicator, icon_att, "");
         app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
-        app_indicator_set_label (indicator, "Git Indicator", "Git Indicator");
+        app_indicator_set_label (indicator, "", "Git Indicator");
         app_indicator_set_menu (indicator, GTK_MENU (indicator_menu));
 
         update (data);
         g_timeout_add (1000, (GtkFunction) update, data);
 
         return 0;
+}
+
+static gboolean update (thdata *data)
+{
+        if (data->mutex == 0) {
+                int i, sync = 0, max = 100;
+                char buffer[5];
+                const char* check_ok = "[✔]";
+                const char* check_ko = "[✘]";
+
+                for (i = 0; i < data->count; i++) {
+                        gchar *item_label = g_strdup_printf ("%s %s",
+                                                             (data->g[i].diffcommit > 0) ? check_ko : check_ok,
+                                                             data->g[i].repodir);
+                        gtk_menu_item_set_label (GTK_MENU_ITEM (item[i]), item_label);
+                        g_free(item_label);
+
+                        if (data->g[i].diffcommit == 0)
+                                sync++;
+                }
+
+                if (data->count != sync)
+                        app_indicator_set_status (indicator,
+                                                  APP_INDICATOR_STATUS_ATTENTION);
+
+                sprintf (buffer, "%d%%", (max * sync / (data->count) ));
+                gchar *level = (gchar *) buffer;
+                gchar *indicator_label = g_strconcat (level, NULL);
+
+                app_indicator_set_label (indicator, indicator_label, "");
+                g_free (indicator_label);
+        }
+
+    return TRUE;
 }
