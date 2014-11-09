@@ -3,7 +3,8 @@
 
 #include <gtk/gtk.h>
 #include <libappindicator/app-indicator.h>
+#include "common.h"
 
-void init_ui (void);
+int init_ui (thdata *data);
 
 #endif

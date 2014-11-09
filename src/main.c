@@ -4,13 +4,8 @@
 #include <pthread.h>
 #include "indicator.h"
 #include "file.h"
+#include "common.h"
 #include "git.h"
-
-typedef struct str_thdata
-{
-        struct git *g;
-} thdata;
-
 
 void *listen(void *ptr);
 
@@ -22,11 +17,11 @@ int main (int argc, char **argv)
 
         gtk_init (&argc, &argv);
 
-        init_ui();
-
         th_listen_return = pthread_create (&th_listen, NULL,
                                               (void *) &listen,
                                               (void *) &data);
+
+        init_ui (&data);
 
         if (th_listen_return) {
                 fprintf (stderr, "Thread failed: %d\n", th_listen_return);
@@ -46,6 +41,7 @@ void* listen (void *ptr)
 
         char **repopath = read_file (".conf", &n);
         data->g = (struct git*) malloc (n * sizeof (struct git));
+        data->count = n;
 
         for (i = 0; i < n; i++) {
                 // Init {todo: make a function}
