@@ -32,14 +32,15 @@ void open_repository (struct git *g)
 void fetch_repository (struct git *g)
 {
         git_remote *remote = NULL;
-        char *loadrev = "origin", buffer[1024];
-        const git_transfer_progress *stats;
+        char *loadrev = "origin";
+        //char buffer[1024];
+        //const git_transfer_progress *stats;
         struct dl_data data;
         git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
         pthread_t worker;
 
-        sprintf(buffer, "Fetching %s for repository %s\n", loadrev, g->repodir);
-        write_file ("_fetch", buffer, "a");
+        /*sprintf(buffer, "Fetching %s for repository %s\n", loadrev, g->repodir);
+        write_file ("_fetch", buffer, "a");*/
 
         handle_errors (git_remote_load (&remote, g->repo, loadrev),
                        "Can't load the remote", loadrev);
@@ -51,14 +52,14 @@ void fetch_repository (struct git *g)
         data.ret = 0;
         data.finished = 0;
 
-        stats = git_remote_stats (remote);
+        //stats = git_remote_stats (remote);
 
         pthread_create (&worker, NULL, download, &data);
 
         handle_errors (data.ret, "Fail downloading datas", NULL);
         pthread_join(worker, NULL);
 
-        if (stats->local_objects > 0) {
+        /*if (stats->local_objects > 0) {
                 sprintf(buffer,
                         "Received %d/%d objects in %zu bytes (used %d local objects)\n",
                         stats->indexed_objects, stats->total_objects,
@@ -69,7 +70,7 @@ void fetch_repository (struct git *g)
                         stats->received_bytes);
         }
 
-        write_file ("_fetch", buffer, "a");
+        write_file ("_fetch", buffer, "a");*/
 
         git_remote_disconnect (remote);
 
@@ -95,9 +96,6 @@ void check_diff_revision (struct git *g)
                 count++;
         }
         g->diffcommit = count;
-
-        sprintf (buffer, "%d", count);
-        write_file ("_status", buffer, "a");
 }
 
 void get_status (struct git *g)
