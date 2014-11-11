@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <gtk/gtk.h>
-#include <libappindicator/app-indicator.h>
 #include "indicator.h"
 #include "git.h"
 
