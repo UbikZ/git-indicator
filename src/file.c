@@ -15,6 +15,15 @@ FILE *open_file (char *file_path, char *rights)
         return file;
 }
 
+short int file_exists (char *file_path)
+{
+        short int ret = 1;
+        if (fopen (file_path, "r") == NULL)
+                ret = 0;
+
+        return ret;
+}
+
 void write_file (char *file_path, char *message, char *rights)
 {
         FILE *file = open_file (file_path, rights);
@@ -22,7 +31,7 @@ void write_file (char *file_path, char *message, char *rights)
         fclose (file);
 }
 
-char **read_file (char *file_path, int *n)
+char **read_file (char *file_path, unsigned int *n)
 {
         int i = 0, delta = REALLOC_DELTA, size = delta;
         char **repopath, repo[REPO_NAME_LEN];

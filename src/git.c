@@ -33,14 +33,14 @@ void fetch_repository (struct git *g)
 {
         git_remote *remote = NULL;
         char *loadrev = "origin";
-        //char buffer[1024];
-        //const git_transfer_progress *stats;
+        char buffer[1024], lockfilepath[512];
+        const git_transfer_progress *stats;
         struct dl_data data;
         git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
         pthread_t worker;
 
-        /*sprintf(buffer, "Fetching %s for repository %s\n", loadrev, g->repodir);
-        write_file ("_fetch", buffer, "a");*/
+        sprintf(buffer, "Fetching %s for repository %s\n", loadrev, g->repodir);
+        write_file ("_fetch", buffer, "a");
 
         handle_errors (git_remote_load (&remote, g->repo, loadrev),
                        "Can't load the remote", loadrev);
@@ -48,34 +48,45 @@ void fetch_repository (struct git *g)
         callbacks.credentials = credential_cb;
         git_remote_set_callbacks (remote, &callbacks);
 
-        data.remote = remote;
-        data.ret = 0;
-        data.finished = 0;
+        strcpy (lockfilepath, g->repodir);
+        strcat (lockfilepath, "/.git/index.lock");
+        if (file_exists (lockfilepath) == 0) {
+                data.remote = remote;
+                data.ret = 0;
+                data.finished = 0;
 
-        //stats = git_remote_stats (remote);
+                stats = git_remote_stats (remote);
+                pthread_create (&worker, NULL, download, &data);
+                handle_errors (data.ret, "Fail downloading datas", NULL);
+                pthread_join(worker, NULL);
 
-        pthread_create (&worker, NULL, download, &data);
+                if (stats->local_objects > 0) {
+                        sprintf (buffer,
+                                 "Received %d/%d objects in %zu bytes (used %d local objects)\n",
+                                 stats->indexed_objects, stats->total_objects,
+                                 stats->received_bytes, stats->local_objects);
+                } else {
+                        sprintf (buffer, "Received %d/%d objects in %zu bytes\n",
+                                 stats->indexed_objects, stats->total_objects,
+                                 stats->received_bytes);
+                }
 
-        handle_errors (data.ret, "Fail downloading datas", NULL);
-        pthread_join(worker, NULL);
-
-        /*if (stats->local_objects > 0) {
-                sprintf(buffer,
-                        "Received %d/%d objects in %zu bytes (used %d local objects)\n",
-                        stats->indexed_objects, stats->total_objects,
-                        stats->received_bytes, stats->local_objects);
+                /*
+                // Easy way mofo
+                handle_errors (git_remote_fetch (remote, NULL, NULL, NULL),
+                               "Can't fetch repository", (char*) g->repodir);
+                */
         } else {
-                sprintf(buffer, "Received %d/%d objects in %zu bytes\n",
-                        stats->indexed_objects, stats->total_objects,
-                        stats->received_bytes);
+                strcpy (buffer, "This repository is locked at the moment.");
         }
 
-        write_file ("_fetch", buffer, "a");*/
+        write_file ("_fetch", buffer, "a");
 
         git_remote_disconnect (remote);
 
         handle_errors (git_remote_update_tips (remote, NULL, NULL),
-                       "Can't update tips repository", (char*) g->repodir);
+                       "Can't update tips repository",
+                       (char*) g->repodir);
 
         git_remote_free (remote);
 }
@@ -232,6 +243,6 @@ static void handle_errors (int error, char *msg, char *var)
                 const git_error *e = giterr_last();
 		fprintf (stderr, "Error %d: %s \"%s\" (%s)\n", error, msg, var,
                          (e && e->message) ? e->message : "???");
-		exit (1);
+		exit (EXIT_FAILURE);
 	}
 }

@@ -37,7 +37,8 @@ void* listen (void *ptr)
 {
         thdata *data;
         data = (thdata *) ptr;
-        int n, i, size = REALLOC_DELTA;
+        unsigned int n, i, size = REALLOC_DELTA;
+        int m = -1;
 
         data->g = (struct git*) malloc (size * sizeof (struct git));
 
@@ -46,6 +47,12 @@ void* listen (void *ptr)
                 data->mutex = 1;
 
                 char **repopath = read_file (".conf", &n);
+                if (m != -1 && m != n) {
+                        fprintf (stderr,
+                                 "Conf file changes detected while runing.");
+                        exit (EXIT_FAILURE);
+                }
+                m = (int) n;
                 data->count = n;
 
                 for (i = 0; i < n; i++) {
@@ -56,7 +63,6 @@ void* listen (void *ptr)
                         }
 
                         // Init {todo: make a function}
-                        memset(&data->g[i], 0, sizeof(struct git));
                         data->g[i].repodir = (char*) malloc (REPO_NAME_LEN);
                         strcpy ((char*) data->g[i].repodir, repopath[i]);
                         data->g[i].revrange = "master..origin/master";
@@ -76,7 +82,7 @@ void* listen (void *ptr)
                 data->mutex = 0;
 
                 free (repopath);
-                sleep (5);
+                sleep (4);
         }
-
+        free (data->g);
 }
