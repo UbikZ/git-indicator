@@ -95,13 +95,11 @@ void check_diff_revision (struct git *g)
 {
         git_oid oid;
         int count = 0;
-        char buffer[1024];
 
         handle_errors (git_revwalk_new(&g->walk, g->repo),
                        "Can't allocate revwalk",
                        (char*) g->repodir);
         revwalk_parse_options (g);
-        strcpy (buffer, "");
 
         while (!git_revwalk_next (&oid, g->walk)) {
                 count++;
@@ -226,11 +224,19 @@ static int credential_cb (git_cred **out, const char *url,
 
 static void *download (void *ptr)
 {
+        char buffer[128];
         struct dl_data *data = (struct dl_data *) ptr;
-        handle_errors (git_remote_connect (data->remote, GIT_DIRECTION_FETCH),
-                       "Can't connect for fetch", NULL);
-        handle_errors (git_remote_download (data->remote, NULL),
-                       "Can't cownload datas for fetch", NULL);
+
+        if (git_remote_connect (data->remote, GIT_DIRECTION_FETCH) < 0) {
+                strcat (buffer, "> Can't connect for fetch");
+                write_file ("_fetch", buffer, "a");
+        }
+        
+        if (git_remote_download (data->remote, NULL) < 0) {
+                strcat (buffer, "> Can't cownload datas for fetch");
+                write_file ("_fetch", buffer, "a");
+        }
+
         data->ret = 0;
         data->finished = 1;
 
