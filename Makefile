@@ -21,7 +21,7 @@ $(ODIR)/%.o: $(CDIR)/%.c
 $(NAME): $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
 	[ ! -d "~/$@" ] && mkdir ~/$@
-	ln -s $(BDIR)/$@ ~/$@ 
+	ln -s `pwd`/$(BDIR)/$@ ~/$@ 
 
 .PHONY: clean
 
