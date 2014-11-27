@@ -1,5 +1,7 @@
 CC=gcc
 
+NAME=git-indicator
+
 CDIR=src
 ODIR=obj
 IDIR=include
@@ -16,10 +18,13 @@ OBJ = $(patsubst %,$(ODIR)/%,$(OFILES))
 $(ODIR)/%.o: $(CDIR)/%.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-git-indicator: $(OBJ)
+$(NAME): $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
+	[ ! -d "~/$@" ] && mkdir ~/$@
+	ln -s $(BDIR)/$@ ~/$@ 
 
 .PHONY: clean
 
 clean:
 	rm -f $(BDIR)/* $(ODIR)/*.o *~ core $(IDIR)/*~ _*
+	[ -d ~/$(NAME) ] && rm -Rf ~/$(NAME)
