@@ -83,9 +83,9 @@ void fetch_repository (struct git *g)
 
     git_remote_disconnect (remote);
 
-    handle_errors (git_remote_update_tips (remote, NULL, NULL),
+    /*handle_errors (git_remote_update_tips (remote, NULL, NULL),
                    "Can't update tips repository",
-                   (char*) g->repodir);
+                   (char*) g->repodir);*/
 
     git_remote_free (remote);
 }
