@@ -21,7 +21,7 @@ $(ODIR)/%.o: $(CDIR)/%.c
 $(NAME): $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
 	[ ! -d "~/$@" ] && mkdir ~/$@
-	ln -s `pwd`/$(BDIR)/$@ ~/$@ 
+	ln -s `pwd`/$(BDIR)/$@ ~/$@ && touch ~/$@/.conf
 
 .PHONY: clean
 
