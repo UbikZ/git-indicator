@@ -20,11 +20,14 @@ $(ODIR)/%.o: $(CDIR)/%.c
 
 $(NAME): $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
-	[ ! -d "~/.$@" ] && mkdir ~/.$@
-	ln -s `pwd`/$(BDIR)/$@ ~/.$@ && find ~/ -type d -name '*.git' | \
-	egrep -v '(bundle|tests|vendor|.composer)' > ~/.$@/.conf
 
 .PHONY: clean
+
+install:
+	[ ! -d "~/.$(NAME)" ] && mkdir ~/.$(NAME)
+	[ ! -f "~/.$(NAME)/.conf" ] && ln -s `pwd`/$(BDIR)/$(NAME) ~/.$(NAME) && \
+	find ~/ -type d -name '*.git' | \
+	egrep -v '(bundle|tests|vendor|.composer)' > ~/.$(NAME)/.conf
 
 clean:
 	rm -f $(BDIR)/* $(ODIR)/*.o *~ core $(IDIR)/*~ _*
