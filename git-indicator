@@ -1,12 +1,22 @@
 #!/bin/sh
-
-homedir=~/.git-indicator
-cmd="./git-indicator"
+### BEGIN INIT INFO
+# Provides:
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
 
 name=`basename $0`
-pid_file="$homedir/$name.pid"
-stdout_log="$homedir/$name.log"
-stderr_log="$homedir/$name.err"
+
+homedir=~/.$name
+cmd="~/.$name/app/bin/$name"
+
+pid_file="/var/run/$name.pid"
+stdout_log="/var/log/$name/access.log"
+stderr_log="/var/log/$name/error.err"
 
 get_pid() {
     cat "$pid_file"
@@ -23,6 +33,7 @@ case "$1" in
         echo "Already started"
     else
         echo "Starting $name"
+        [ ! -d "/var/log/$name" ] && mkdir /var/log/$name
         cd $homedir
         $cmd >> "$stdout_log" 2>> "$stderr_log" &
         echo $! > "$pid_file"
