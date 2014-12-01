@@ -7,8 +7,8 @@
 
 typedef struct str_thdata
 {
-    int mutex;
-    int count;
+    short int mutex;
+    unsigned int count;
     struct git *g;
 } thdata;
 
