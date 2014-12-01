@@ -39,38 +39,20 @@ void* listen (void *ptr)
     char *conf_file = "/.git-indicator/.conf", *uhome_dir = getenv ("HOME"),
          *uconf_path;
     data = (thdata *) ptr;
-    unsigned int n, i, size = REALLOC_DELTA;
-    int m = -1, multi = 1;
+    unsigned int i;
 
-    data->g = (struct git*) malloc (size * sizeof (struct git));
     uhome_dir = getenv ("HOME");
     uconf_path = (char*) malloc (strlen (uhome_dir) + strlen (conf_file));
     strcpy (uconf_path, uhome_dir);
     strcat (uconf_path, conf_file);
+    char **repopath = read_file (uconf_path, &data->count);
+    data->g = (struct git*) malloc (data->count * sizeof (struct git));
 
     while (1) {
         // Lock gtk update
         data->mutex = 1;
 
-        char **repopath = read_file (uconf_path, &n);
-        if (m != -1 && m != n) {
-            fprintf (stderr, "Conf file changes detected while runing.");
-            exit (EXIT_FAILURE);
-        }
-        m = (int) n;
-        data->count = n;
-
-        for (i = 0; i < n; i++) {
-            if (i > REALLOC_DELTA) {
-                size += REALLOC_DELTA;
-                multi += i % REALLOC_DELTA;
-                char buff[10];
-                sprintf (buff, "%d - %d\n", size, multi);
-                write_file ("_size", buff, "a");
-                data->g = (struct git*) realloc (data->g,
-                                                 size * sizeof (struct git));
-            }
-
+        for (i = 0; i < data->count; i++) {
             // Init {todo: make a function}
             data->g[i].repodir = (char*) malloc (REPO_NAME_LEN);
             strcpy ((char*) data->g[i].repodir, repopath[i]);
@@ -78,22 +60,17 @@ void* listen (void *ptr)
             // -
 
             git_threads_init();
-
-            open_repository (&data->g[i]);
-            fetch_repository (&data->g[i]);
-            check_diff_revision (&data->g[i]);
-            close_repository (&data->g[i]);
-
+            compute_repository (&data->g[i]);
             git_threads_shutdown();
         }
 
         // Unlock gtk update
         data->mutex = 0;
 
-        free (repopath);
         sleep (4);
     }
 
+    free (repopath);
     free (data->g);
     free (uconf_path);
 }
