@@ -47,7 +47,7 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
 {
     git_remote *remote = NULL;
     char *loadrev = "origin";
-    char buffer[1024], lockfilepath[512];
+    char buffer[1024];
     const git_transfer_progress *stats;
     struct dl_data data;
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
