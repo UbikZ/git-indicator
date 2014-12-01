@@ -26,9 +26,9 @@ $(NAME): $(OBJ)
 install:
 	[ ! -d "~/.$(NAME)" ] && mkdir ~/.$(NAME)
 	[ ! -f "~/.$(NAME)/.conf" ] && ln -s `pwd`/$(BDIR)/$(NAME) ~/.$(NAME) && \
-	find ~/ -type d -name '*.git' | \
+	find ~/ -type d -name '*.git' | sed "s/\.git//g" | \
 	egrep -v '(bundle|tests|vendor|.composer)' > ~/.$(NAME)/.conf
 
 clean:
-	rm -f $(BDIR)/* $(ODIR)/*.o *~ core $(IDIR)/*~ _*
+	rm -f $(BDIR)/* $(ODIR)/*.o *~ $(IDIR)/*~ _*
 	[ -d ~/.$(NAME) ] && rm -Rf ~/.$(NAME)
