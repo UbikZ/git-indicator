@@ -1,6 +1,6 @@
 #!/bin/sh
 
-homedir=~/git-indicator
+homedir=~/.git-indicator
 cmd="./git-indicator"
 
 name=`basename $0`
