@@ -16,12 +16,10 @@ struct git
     git_status_list *status;
     git_status_options statusopt;
     int diffcommit;
+    short int disabled;
+    char error_message[1024];
 };
 
-void open_repository (struct git *g);
-void fetch_repository (struct git *g);
-void check_diff_revision (struct git *g);
-void close_repository (struct git *g);
-void get_status (struct git *g);
+void compute_repository (struct git *g);
 
 #endif
