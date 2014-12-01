@@ -20,8 +20,7 @@ $(ODIR)/%.o: $(CDIR)/%.c
 
 $(NAME): $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
-	cp -p $(BDIR)/$@ ~/.$@/$@
-
+	ln -s `pwd` ~/.$@/app
 .PHONY: clean
 
 install:
