@@ -62,7 +62,7 @@ static gboolean update (thdata *data)
                                                     ? check_ko : check_ok,
                                                  data->g[i].repodir);
             gtk_menu_item_set_label (GTK_MENU_ITEM (item[i]), item_label);
-            g_free(item_label);
+            g_free (item_label);
 
             if (data->g[i].diffcommit == 0)
                 sync++;
