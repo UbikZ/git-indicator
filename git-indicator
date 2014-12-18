@@ -13,7 +13,7 @@ name=`basename $0`
 
 username=ubikz
 homedir=/home/$username/.$name
-cmd="$homedir/app/bin/$name"
+cmd="su $username -c $homedir/app/bin/$name"
 
 pid_file="/var/run/$name.pid"
 stdout_log="/var/log/$name/access.log"
