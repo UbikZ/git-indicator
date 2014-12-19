@@ -25,7 +25,6 @@ $(NAME): $(OBJ)
 
 install:
 	[ ! -d ~/.$(NAME) ] && mkdir ~/.$(NAME)
-	[ ! -f /etc/init.d/$(NAME) ] && ln -s `pwd`/$(NAME) /etc/init.d/$(NAME)
 	[ ! -f ~/.$(NAME)/.conf ] && \
 	find ~/ -type d -name '*.git' | sed "s/\.git//g" | \
 	egrep -v '(bundle|tests|vendor|.composer)' > ~/.$(NAME)/.conf
@@ -33,4 +32,3 @@ install:
 clean:
 	rm -f $(BDIR)/* $(ODIR)/*.o *~ $(IDIR)/*~ _*
 	[ -d ~/.$(NAME) ] && rm -Rf ~/.$(NAME)
-	[ -f /etc/init.d/$(NAME) ] && rm -f /etc/init.d/$(NAME)
