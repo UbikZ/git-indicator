@@ -246,12 +246,12 @@ static void *download (void *ptr)
 
     if (git_remote_connect (data->remote, GIT_DIRECTION_FETCH) < 0) {
         strcat (buffer, "> Can't connect for fetch");
-        write_file ("_fetch", buffer, "a");
+        write_file ("fetch.log", buffer, "a");
     }
 
     if (git_remote_download (data->remote, NULL) < 0) {
         strcat (buffer, "> Can't cownload datas for fetch");
-        write_file ("_fetch", buffer, "a");
+        write_file ("fetch.log", buffer, "a");
     }
 
     data->ret = 0;
@@ -269,7 +269,7 @@ static void handle_errors (struct git *g, int error, char *msg, char *var)
         const git_error *e = giterr_last();
 		sprintf (buffer, "Error %d: %s \"%s\" (%s)\n", error, msg, var,
                  (e && e->message) ? e->message : "???");
-        write_file ("_errors.log", buffer, "a");
+        write_file ("errors.log", buffer, "a");
 		strcpy (g->error_message, buffer);
         g->disabled = 1;
 	}
