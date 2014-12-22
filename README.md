@@ -29,24 +29,34 @@ There is still room for improvement.
 ## Installation
 
 ### Source
+> To prepare the install
 
 ```bash 
 $ sudo apt-get install libgtk-2-dev libappindicator2-dev libgit2-dev
 $ git clone https://github.com/ubikz/git-indicator.git
 $ cd git-indicator
-$ make install
+```
+
+> To install
+
+```bash 
+$ make configure
 $ make
+$ sudo make install
+```
+
+> To clean and uninstall
+
+```bash 
+$ make clean
+$ sudo make uninstall
 ```
 
 ### Autostart
 
 Ubuntu uses `.desktop` files to manage autostart. You may use the one provided
 with the sources.
-
-```bash
-$ sudo cp ./git-indicator /usr/local/bin
-$ cp ./indicator-text.desktop $HOME/.config/autostart/
-```
+> The make install will copy the destkop autostart file
 
 ### Usage
 
