@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=bash /home/ubikz/.git-indicator/app/git-indicator start
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[fr_FR]=Guake
+Name=Guake
+Comment[fr_FR]=
+Comment=
