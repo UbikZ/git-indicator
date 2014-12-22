@@ -24,6 +24,8 @@ $(NAME): $(OBJ)
 
 configure:
 	[ ! -d ~/.$(NAME) ] && mkdir ~/.$(NAME)
+	[ ! -f ~/.config/autostart/$(NAME).desktop ] && \
+	cp $(NAME).desktop ~/.config/autostart
 	[ ! -f ~/.$(NAME)/.conf ] && \
 	find ~/ -type d -name '*.git' | sed "s/\.git//g" | \
 	egrep -v '(bundle|tests|vendor|.composer)' > ~/.$(NAME)/.conf
@@ -33,6 +35,7 @@ install:
 
 uninstall:
 	[ -d ~/.$(NAME) ] && rm -Rf ~/.$(NAME)
+	[ -f ~/.config/autostart/$(NAME).desktop ] && rm ~/.config/autostart/$(NAME).desktop
 	[ -f /usr/local/bin/$(NAME) ] && rm /usr/local/bin/$(NAME)
 
 clean:
