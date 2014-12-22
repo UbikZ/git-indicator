@@ -62,7 +62,7 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
 
         switch (mode) {
             case FETCH_M_AUTO:
-                handle_errors (g, git_remote_fetch (remote, NULL, NULL, NULL),
+                handle_errors (g, git_remote_fetch (remote),
                                "Can't fetch repository", (char*) g->repodir);
                 break;
             case FETCH_M_MANUAL:
@@ -249,7 +249,7 @@ static void *download (void *ptr)
         write_file ("fetch.log", buffer, "a");
     }
 
-    if (git_remote_download (data->remote, NULL) < 0) {
+    if (git_remote_download (data->remote) < 0) {
         strcat (buffer, "> Can't cownload datas for fetch");
         write_file ("fetch.log", buffer, "a");
     }
