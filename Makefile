@@ -21,15 +21,21 @@ $(ODIR)/%.o: $(CDIR)/%.c
 $(NAME): $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
 	ln -s `pwd` ~/.$@/app
-	
-.PHONY: clean
 
-install:
+configure:
 	[ ! -d ~/.$(NAME) ] && mkdir ~/.$(NAME)
 	[ ! -f ~/.$(NAME)/.conf ] && \
 	find ~/ -type d -name '*.git' | sed "s/\.git//g" | \
 	egrep -v '(bundle|tests|vendor|.composer)' > ~/.$(NAME)/.conf
 
+install:
+	[ ! -f /usr/local/bin/$(NAME) ] && cp $(NAME) /usr/local/bin/$(NAME)
+
+uninstall:
+	[ -d ~/.$(NAME) ] && rm -Rf ~/.$(NAME)
+	[ -f /usr/local/bin/$(NAME) ] && rm /usr/local/bin/$(NAME)
+
 clean:
 	rm -f $(BDIR)/* $(ODIR)/*.o *~ $(IDIR)/*~ _*
-	[ -d ~/.$(NAME) ] && rm -Rf ~/.$(NAME)
+
+.PHONY: configure install uninstall clean
