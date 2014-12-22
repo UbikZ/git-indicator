@@ -101,4 +101,4 @@ somebody is interested. Just write a feature request.
 ## License
 
 This program is distributed under the terms of the MIT license. See
-[LICENSE](https://github.com/eglimi/indicator-text/raw/master/LICENSE) file.
+[LICENSE](https://github.com/UbikZ/git-indicator/blob/master/LICENSE) file.
