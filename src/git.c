@@ -5,15 +5,13 @@
 #include "git.h"
 #include "file.h"
 
-#define FETCH_M_AUTO 1
-#define FETCH_M_MANUAL 2
-#define FETCH_DEBUG 1
-
 static struct dl_data {
     git_remote *remote;
     int ret;
     int finished;
 };
+
+static short int debug_mode = MODE_NORMAL;
 
 //
 static void fetch_repository (struct git *g, short int mode, short int debug);
@@ -23,7 +21,7 @@ static void get_status (struct git *g);
 
 //
 static void handle_errors (struct git *g, int error, char *msg, char *var,
-                           short int log);
+                           short int debug);
 static void push_commit(struct git *g, const git_oid *oid, int hide);
 static void push_range(struct git *g, const char *range, int hide);
 static void parse_revision (struct git *g, const char *param);
@@ -39,7 +37,7 @@ void compute_repository (struct git *g)
     handle_errors (g, git_repository_open_ext (&g->repo, g->repodir, 0, NULL),
 		           "Can't open repository", (char*) g->repodir, 1);
     if (!g->disabled)
-        fetch_repository (g, FETCH_M_AUTO, 0);
+        fetch_repository (g, FETCH_M_AUTO, debug_mode);
 
     close_repository (g);
 }
@@ -55,7 +53,7 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
     pthread_t worker;
 
     handle_errors (g, git_remote_load (&remote, g->repo, loadrev),
-                   "Can't load the remote", loadrev, 1);
+                   "Can't load the remote", loadrev, debug_mode);
 
     if (!g->disabled) {
         callbacks.credentials = credential_cb;
@@ -64,7 +62,8 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
         switch (mode) {
             case FETCH_M_AUTO:
                 handle_errors (g, git_remote_fetch (remote),
-                               "Can't fetch repository", (char*) g->repodir, 0);
+                               "Can't fetch repository", (char*) g->repodir,
+                               debug_mode);
                 break;
             case FETCH_M_MANUAL:
                 data.remote = remote;
@@ -74,10 +73,10 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
                 stats = git_remote_stats (remote);
                 pthread_create (&worker, NULL, download, &data);
                 handle_errors (g, data.ret, "Fail downloading datas",
-                               (char*) g->repodir, 1);
-                pthread_join(worker, NULL);
+                               (char*) g->repodir, debug_mode);
+                pthread_join (worker, NULL);
 
-                if (debug == FETCH_DEBUG) {
+                if (debug == MODE_DEBUG) {
                     if (stats->local_objects > 0) {
                         sprintf (buffer,
                                  "Received %d/%d objects in %zu bytes (used %d local objects)\n",
@@ -91,7 +90,8 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
                 }
                 break;
             default:
-                handle_errors (g, -1, "Bad fetch mode", (char*) g->repodir, 1);
+                handle_errors (g, -1, "Bad fetch mode", (char*) g->repodir,
+                               debug_mode);
                 break;
         }
 
@@ -109,7 +109,7 @@ static void check_diff_revision (struct git *g)
     int count = 0;
 
     handle_errors (g, git_revwalk_new(&g->walk, g->repo),
-                   "Can't allocate revwalk", (char*) g->repodir, 1);
+                   "Can't allocate revwalk", (char*) g->repodir, debug_mode);
 
     if (!g->disabled) {
         revwalk_parse_options (g);
@@ -127,7 +127,8 @@ void get_status (struct git *g)
 {
     status_parse_options(g);
     handle_errors (g, git_status_list_new (&g->status, g->repo, &g->statusopt),
-                   "Can't get status for repository", (char*) g->repodir, 1);
+                   "Can't get status for repository", (char*) g->repodir,
+                   debug_mode);
 }
 
 void close_repository (struct git *g)
@@ -163,10 +164,10 @@ static void push_commit(struct git *g, const git_oid *oid, int hide)
 
 	if (hide)
 		handle_errors (g, git_revwalk_hide (g->walk, oid),
-                       "Can't push commit (hide)", (char*) id, 1);
+                       "Can't push commit (hide)", (char*) id, debug_mode);
 	else
 		handle_errors (g, git_revwalk_push (g->walk, oid),
-                       "Can't push commit (!hide)", (char*) id, 1);
+                       "Can't push commit (!hide)", (char*) id, debug_mode);
 }
 
 static void push_range(struct git *g, const char *range, int hide)
@@ -176,7 +177,7 @@ static void push_range(struct git *g, const char *range, int hide)
     const git_oid *oid_from, *oid_to;
 
 	handle_errors (g, git_revparse (&revspec, g->repo, range),
-                   "Can't parse revision", (char*) g->repodir, 0);
+                   "Can't parse revision", (char*) g->repodir, debug_mode);
 
     if (!g->disabled) {
         parse_revision (g, range);
@@ -207,7 +208,7 @@ static void parse_revision (struct git *g, const char *param)
 
     handle_errors (g, git_revparse (&rs, g->repo, param),
                    "Can't parse revision",
-                   (char*) g->repodir, 0);
+                   (char*) g->repodir, debug_mode);
 
     if (!g->disabled) {
         if ((rs.flags & GIT_REVPARSE_SINGLE) != 0)
@@ -220,13 +221,14 @@ static void parse_revision (struct git *g, const char *param)
                 handle_errors (g, git_merge_base (&base, g->repo,
                                                   git_object_id (rs.from),
                                                   git_object_id (rs.to)),
-                               "Can't not find merge base", (char*) param, 1);
+                               "Can't not find merge base", (char*) param,
+                               debug_mode);
             }
 
             git_object_free (rs.from);
         } else
             handle_errors (g, -1, "Invalid results from git_revparse",
-                           (char*) param, 1);
+                           (char*) param, debug_mode);
     }
 }
 
@@ -262,12 +264,12 @@ static void *download (void *ptr)
 }
 
 static void handle_errors (struct git *g, int error, char *msg, char *var,
-                           short int log)
+                           short int debug)
 {
     g->disabled = 0;
 
 	if (error < 0) {
-        if (log == 1) {
+        if (debug == MODE_DEBUG) {
             char buffer[512];
             const git_error *e = giterr_last();
     		sprintf (buffer, "Error %d: %s \"%s\" (%s)\n", error, msg, var,
