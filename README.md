@@ -37,7 +37,11 @@ $ git clone https://github.com/ubikz/git-indicator.git
 $ cd git-indicator
 ```
 
-> To install
+> You may need to compile the libgit2 dependencie yourself
+Check it out to get the **last stable version** ([here](https://github.com/libgit2/libgit2/releases)).
+You can follow [this](https://github.com/libgit2/libgit2) to compile the lib.
+
+> To install git-indicator
 
 ```bash
 $ make configure
@@ -45,7 +49,7 @@ $ make
 $ sudo make install
 ```
 
-> To clean and uninstall
+> To clean and uninstall git-indicator
 
 ```bash
 $ make clean
