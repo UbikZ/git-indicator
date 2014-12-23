@@ -54,6 +54,7 @@ static gboolean update (thdata *data)
         char buffer[5];
         const char* check_ok = "[✔]";
         const char* check_ko = "[✘]";
+        const char* check_disabled = "[-]";
 
         for (i = 0; i < data->count; i++) {
             gchar *item_label = g_strdup_printf ("%s %s",
@@ -62,6 +63,11 @@ static gboolean update (thdata *data)
                                                  data->g[i].repodir);
             gtk_menu_item_set_label (GTK_MENU_ITEM (item[i]), item_label);
             g_free (item_label);
+
+            if (data->g[i].disabled == 1)
+                gtk_widget_set_sensitive (item[i], FALSE);
+            else
+                gtk_widget_set_sensitive (item[i], TRUE);
 
             if (data->g[i].diffcommit == 0)
                 sync++;
