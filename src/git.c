@@ -17,7 +17,6 @@ static short int debug_mode = MODE_DEBUG;
 static void fetch_repository (struct git *g, short int mode, short int debug);
 static void check_diff_revision (struct git *g);
 static void close_repository (struct git *g);
-static void get_status (struct git *g);
 
 //
 static void handle_errors (struct git *g, int error, char *msg, char *var,
@@ -25,7 +24,6 @@ static void handle_errors (struct git *g, int error, char *msg, char *var,
 static void push_commit(struct git *g, const git_oid *oid, int hide);
 static void push_range(struct git *g, const char *range, int hide);
 static void parse_revision (struct git *g, const char *param);
-static int status_parse_options (struct git *g);
 static void revwalk_parse_options (struct git *g);
 static int credential_cb (git_cred **out, const char *url,
                           const char *username_from_url,
@@ -46,7 +44,6 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
 {
     git_remote *remote = NULL;
     char *loadrev = "origin";
-    char buffer[1024];
     const git_transfer_progress *stats;
     struct dl_data data;
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
@@ -61,7 +58,7 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
 
         switch (mode) {
             case FETCH_M_AUTO:
-                handle_errors (g, git_remote_fetch (remote),
+                handle_errors (g, git_remote_fetch (remote, NULL, NULL),
                                "Can't fetch repository", (char*) g->repodir,
                                debug_mode);
                 break;
@@ -78,14 +75,13 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
 
                 if (debug == MODE_DEBUG) {
                     if (stats->local_objects > 0) {
-                        sprintf (buffer,
-                                 "Received %d/%d objects in %zu bytes (used %d local objects)\n",
-                                 stats->indexed_objects, stats->total_objects,
-                                 stats->received_bytes, stats->local_objects);
+                        printf ("Received %d/%d objects in %zu bytes (used %d local objects)\n",
+                                stats->indexed_objects, stats->total_objects,
+                                stats->received_bytes, stats->local_objects);
                     } else {
-                        sprintf (buffer, "Received %d/%d objects in %zu bytes\n",
-                                 stats->indexed_objects, stats->total_objects,
-                                 stats->received_bytes);
+                        printf ("Received %d/%d objects in %zu bytes\n",
+                                stats->indexed_objects, stats->total_objects,
+                                stats->received_bytes);
                     }
                 }
                 break;
@@ -123,30 +119,9 @@ static void check_diff_revision (struct git *g)
     }
 }
 
-void get_status (struct git *g)
-{
-    status_parse_options(g);
-    handle_errors (g, git_status_list_new (&g->status, g->repo, &g->statusopt),
-                   "Can't get status for repository", (char*) g->repodir,
-                   debug_mode);
-}
-
 void close_repository (struct git *g)
 {
     git_repository_free (g->repo);
-}
-
-static int status_parse_options (struct git *g)
-{
-    git_status_options opts = GIT_STATUS_OPTIONS_INIT;
-    opts.show = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
-    opts.flags = GIT_STATUS_OPT_INCLUDE_UNTRACKED |
-                 GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
-                 GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
-
-    g->statusopt = opts;
-
-    return 0;
 }
 
 static void revwalk_parse_options (struct git *g)
@@ -244,18 +219,13 @@ static int credential_cb (git_cred **out, const char *url,
 
 static void *download (void *ptr)
 {
-    char buffer[128];
     struct dl_data *data = (struct dl_data *) ptr;
 
-    if (git_remote_connect (data->remote, GIT_DIRECTION_FETCH) < 0) {
-        strcat (buffer, "> Can't connect for fetch");
-        write_file ("fetch.log", buffer, "a");
-    }
+    if (git_remote_connect (data->remote, GIT_DIRECTION_FETCH) < 0)
+        printf ("> Can't connect for fetch");
 
-    if (git_remote_download (data->remote) < 0) {
-        strcat (buffer, "> Can't cownload datas for fetch");
-        write_file ("fetch.log", buffer, "a");
-    }
+    if (git_remote_download (data->remote) < 0)
+        printf ("> Can't cownload datas for fetch");
 
     data->ret = 0;
     data->finished = 1;

@@ -54,7 +54,7 @@ static gboolean update (thdata *data)
         char buffer[5];
         const char* check_ok = "[✔]";
         const char* check_ko = "[✘]";
-        const char* check_disabled = "[-]";
+        //const char* check_disabled = "[-]";
 
         for (i = 0; i < data->count; i++) {
             gchar *item_label = g_strdup_printf ("%s %s",
