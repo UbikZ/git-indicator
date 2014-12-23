@@ -11,7 +11,7 @@ static struct dl_data {
     int finished;
 };
 
-static short int debug_mode = MODE_NORMAL;
+static short int debug_mode = MODE_DEBUG;
 
 //
 static void fetch_repository (struct git *g, short int mode, short int debug);
@@ -272,9 +272,9 @@ static void handle_errors (struct git *g, int error, char *msg, char *var,
         if (debug == MODE_DEBUG) {
             char buffer[512];
             const git_error *e = giterr_last();
-    		sprintf (buffer, "Error %d: %s \"%s\" (%s)\n", error, msg, var,
+    		printf ("Error %d: %s \"%s\" (%s)\n", error, msg, var,
                      (e && e->message) ? e->message : "???");
-            write_file ("errors.log", buffer, "a");
+            //write_file ("errors.log", buffer, "a");
     		strcpy (g->error_message, buffer);
         }
         g->disabled = 1;
