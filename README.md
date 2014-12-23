@@ -38,6 +38,7 @@ $ cd git-indicator
 ```
 
 > You may need to compile the libgit2 dependencie yourself
+
 Check it out to get the **last stable version** ([here](https://github.com/libgit2/libgit2/releases)).
 You can follow [this](https://github.com/libgit2/libgit2) to compile the lib.
 
