@@ -31,7 +31,7 @@ There is still room for improvement.
 ### Source
 > To prepare the install
 
-```bash 
+```bash
 $ sudo apt-get install libgtk-2-dev libappindicator2-dev libgit2-dev
 $ git clone https://github.com/ubikz/git-indicator.git
 $ cd git-indicator
@@ -39,7 +39,7 @@ $ cd git-indicator
 
 > To install
 
-```bash 
+```bash
 $ make configure
 $ make
 $ sudo make install
@@ -47,7 +47,7 @@ $ sudo make install
 
 > To clean and uninstall
 
-```bash 
+```bash
 $ make clean
 $ sudo make uninstall
 ```
@@ -93,7 +93,7 @@ If stdout = 0, then your local master is up to date; otherwise there are commits
 ### Libraries
 
 * [App-Indicator](https://wiki.ubuntu.com/DesktopExperienceTeam/ApplicationIndicators): API for panel indicator aera support (gnome).
-* [LibGit](https://libgit2.github.com/): portable and pure C implementation of the Git core methods provided as a re-entrant linkable library with a solid API, allowing you to write native speed custom Git applications in any language which supports C bindings.
+* [Libgit2](https://libgit2.github.com/): portable and pure C implementation of the Git core methods provided as a re-entrant linkable library with a solid API, allowing you to write native speed custom Git applications in any language which supports C bindings.
 
 ### TODO LIST
 > You can make pull requests adding the feature name
