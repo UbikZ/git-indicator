@@ -99,9 +99,9 @@ If stdout = 0, then your local master is up to date; otherwise there are commits
 > You can make pull requests adding the feature name
 
 * Add **no connection** icon and disable percentage then
-* Add SSH support with creditentials (already started) - for private repository -
-* Improve design for each repository status (markup for GTk)
-* Add notification support
+* Add **SSH support** with creditentials (already started) - for private repository -
+* Improve design for each repository status (**markup for GTK**)
+* Add **notification** support [NotityOSD](https://wiki.ubuntu.com/NotifyOSD)
 
 ### Ubuntu Package
 
