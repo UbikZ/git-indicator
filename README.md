@@ -110,7 +110,7 @@ If stdout = 0, then your local master is up to date; otherwise there are commits
 * Add **no connection** icon and disable percentage then
 * Add **SSH support** with creditentials (already started) - for private repository -
 * Improve design for each repository status (**markup for GTK**)
-* Add **notification** support [NotityOSD](https://wiki.ubuntu.com/NotifyOSD)
+* Add **notification** support [NotityOSD](https://wiki.ubuntu.com/NotifyOSD) with [exemple](https://wiki.ubuntu.com/NotificationDevelopmentGuidelines?action=AttachFile&do=view&target=summary-body.c)
 
 ### Ubuntu Package
 
