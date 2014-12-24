@@ -58,7 +58,7 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
 
         switch (mode) {
             case FETCH_M_AUTO:
-                handle_errors (g, git_remote_fetch (remote, NULL, NULL),
+                handle_errors (g, git_remote_fetch (remote),
                                "Can't fetch repository", (char*) g->repodir,
                                debug_mode);
                 break;
