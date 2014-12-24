@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "indicator.h"
 #include "git.h"
+#include "notify-osd.h"
 
 static GtkWidget **item;
 static AppIndicator *indicator;
@@ -71,6 +72,8 @@ static gboolean update (thdata *data)
 
             if (data->g[i].diffcommit == 0)
                 sync++;
+            else if (data->g[i].disabled == 0)
+                append_notification ("title", "test pouet");
         }
 
         if (data->count != sync)
