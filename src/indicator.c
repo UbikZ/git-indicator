@@ -70,10 +70,14 @@ static gboolean update (thdata *data)
             else
                 gtk_widget_set_sensitive (item[i], TRUE);
 
-            if (data->g[i].diffcommit == 0)
+            if (data->g[i].diffcommit == 0) {
                 sync++;
-            else if (data->g[i].disabled == 0)
-                append_notification ("title", "test pouet");
+                data->g[i].popindisplayed = 0;
+            } else if ((data->g[i].disabled == 0)
+                       && (data->g[i].poppindisplayed == 0)) {
+                append_notification ("[ Repository ]", repodir);
+                data->g[i].popindisplayed = 1;
+            }
         }
 
         if (data->count != sync)

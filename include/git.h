@@ -21,6 +21,7 @@ struct git
     git_status_options statusopt;
     int diffcommit;
     short int disabled;
+    short int popindisplayed;
     char error_message[1024];
 };
 
