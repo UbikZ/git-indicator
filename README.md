@@ -18,6 +18,12 @@ Panel showing synchronisation of each repositories.
 
 ![git-indicator screenshot 3](https://github.com/UbikZ/git-indicator/blob/gh-pages/img/git_indicator.png "git-indicator screenshot 3")
 
+Panel showing notification for repositories which have new commits.
+
+![git-indicator screenshot notify](https://github.com/UbikZ/git-indicator/blob/gh-pages/img/git_indicator_notify.png "git-indicator screenshot notify")
+
+
+
 ## Motivation
 
 The goal is to have some quick synchronisation information about your [Git](http://www.git-scm.com/) repositories.
