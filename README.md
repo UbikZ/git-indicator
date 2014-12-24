@@ -39,8 +39,9 @@ $ cd git-indicator
 
 > You may need to compile the libgit2 dependencie yourself
 
-Check it out to get the **last stable version** ([here](https://github.com/libgit2/libgit2/releases)).
+If you want to get the **last stable version** ([here](https://github.com/libgit2/libgit2/releases)).
 You can follow [this](https://github.com/libgit2/libgit2) to compile the lib.
+**But the application is developped to be compiled with 0.20.0 version of libgit. Thus, functions prototypes may have been changed.**
 
 > To install git-indicator
 
