@@ -52,7 +52,7 @@ static gboolean update (thdata *data)
 {
     if (data->mutex == 0) {
         int i, sync = 0, max = 100;
-        char buffer[5];
+        char buffer[5], buf[128];
         const char* check_ok = "[✔]";
         const char* check_ko = "[✘]";
         //const char* check_disabled = "[-]";
@@ -74,8 +74,9 @@ static gboolean update (thdata *data)
                 sync++;
                 data->g[i].popindisplayed = 0;
             } else if ((data->g[i].disabled == 0)
-                       && (data->g[i].poppindisplayed == 0)) {
-                append_notification ("[ Repository ]", repodir);
+                       && (data->g[i].popindisplayed == 0)) {
+                sprintf (buf, "[ %d commits added ]", data->g[i].diffcommit);
+                append_notification (buf, (char*) data->g[i].repodir);
                 data->g[i].popindisplayed = 1;
             }
         }
