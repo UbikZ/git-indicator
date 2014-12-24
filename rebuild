@@ -1,0 +1,7 @@
+#!/bin/sh
+
+make clean && \
+sudo make uninstall
+make configure && \
+make && \
+sudo make install
