@@ -99,6 +99,17 @@ $ git rev-list master..origin/master --count
 
 If stdout = 0, then your local master is up to date; otherwise there are commits above your local branch.
 
+### Issues
+
+You might encounter an issue which should be notice you that "Too many files opened".
+It's all about linux file open descriptors. By default there are 2^10 per process which
+is pretty low actually. You can change this limit:
+* Change the max hard limit from 2^10 to 2^16 ```sudo echo "* hard nofile 65536" >> /etc/security/limits.conf```
+* Logout/Login
+* Change the limit set for the current user ```ulimit -n 65536```
+
+This is the manual steps. You can script this to change the user limit everytime you start your user session.
+
 ### Libraries
 
 * [App-Indicator](https://wiki.ubuntu.com/DesktopExperienceTeam/ApplicationIndicators): API for panel indicator aera support (gnome).
