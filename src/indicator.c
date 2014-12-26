@@ -53,15 +53,17 @@ static gboolean update (thdata *data)
     if (data->mutex == 0) {
         int i, sync = 0, max = 100;
         char buffer[5], buf[128];
-        const char* check_ok = "[✔]";
-        const char* check_ko = "[✘]";
-        //const char* check_disabled = "[-]";
+        const char* check_ok = "[✔] ";
+        const char* check_ko = "[✘] ";
 
         for (i = 0; i < data->count; i++) {
-            gchar *item_label = g_strdup_printf ("%s %s",
-                                                 (data->g[i].diffcommit > 0)
-                                                    ? check_ko : check_ok,
-                                                 data->g[i].repodir);
+            gchar *item_label = g_strdup_printf (
+                "%s%s",
+                (data->g[i].disabled == 0)
+                    ? ((data->g[i].diffcommit > 0) ? check_ko : check_ok)
+                    : "",
+                data->g[i].repodir
+            );
             gtk_menu_item_set_label (GTK_MENU_ITEM (item[i]), item_label);
             g_free (item_label);
 
