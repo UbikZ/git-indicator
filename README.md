@@ -75,8 +75,8 @@ with the sources.
 
 ### Usage
 
-The bash script you cp in `/usr/local/bin` is service-like script.
-You can manage the indicator with {start|restart|stop|status} commands.
+The install creates a bash script: `/usr/local/bin/git-indicator`. It is service-like script.
+You can manage the indicator with **{start|restart|stop|status}** commands.
 
 ### Change configuration
 
