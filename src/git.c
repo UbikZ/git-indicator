@@ -211,10 +211,13 @@ static int credential_cb (git_cred **out, const char *url,
                           const char *username_from_url,
                           unsigned int allowed_types, void *payload)
 {
-    char username[128] = "test@test.com";
-	char password[128] = "test";
+    char id_rsa_pub[64], id_rsa[64], *uhome_dir = getenv ("HOME");
+    strcpy (id_rsa_pub, uhome_dir);
+    strcat (id_rsa_pub, "/.ssh/id_rsa.pub");
+    strcpy (id_rsa, uhome_dir);
+    strcat (id_rsa, "/.ssh/id_rsa");
 
-	return git_cred_userpass_plaintext_new (out, username, password);
+    return git_cred_ssh_key_new(out, "git", id_rsa_pub, id_rsa, "");
 }
 
 static void *download (void *ptr)
@@ -244,7 +247,6 @@ static void handle_errors (struct git *g, int error, char *msg, char *var,
             const git_error *e = giterr_last();
     		printf ("Error %d: %s \"%s\" (%s)\n", error, msg, var,
                      (e && e->message) ? e->message : "???");
-            //write_file ("errors.log", buffer, "a");
     		strcpy (g->error_message, buffer);
         }
         g->disabled = 1;

@@ -10,7 +10,7 @@ BDIR=bin
 VERB=-Wall
 
 CFLAGS=-lpthread -g $(VERB) -I$(IDIR) \
-`pkg-config --libs --cflags gtk+-2.0 appindicator-0.1 libgit2 libnotify glib-2.0`
+`pkg-config --libs --cflags gtk+-2.0 appindicator-0.1 libgit2 libnotify glib-2.0 libssh2`
 
 OFILES = main.o git.o indicator.o file.o notify-osd.o
 OBJ = $(patsubst %,$(ODIR)/%,$(OFILES))

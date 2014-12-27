@@ -126,7 +126,6 @@ command to increase the number of open descriptors automatically.
 > You can make pull requests adding the feature name
 
 * Add **no connection** icon and disable percentage then
-* Add **SSH support** with creditentials (already started) - for private repository -
 * Improve design for each repository status (**markup for GTK**)
 
 ### Ubuntu Package
