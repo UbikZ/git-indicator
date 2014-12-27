@@ -130,6 +130,7 @@ sources with the right version (git-indicator source code compiled for 0.20.0) a
 * [App-Indicator](https://wiki.ubuntu.com/DesktopExperienceTeam/ApplicationIndicators): API for panel indicator aera support (gnome).
 * [Libgit2](https://libgit2.github.com/): portable and pure C implementation of the Git core methods provided as a re-entrant linkable library with a solid API, allowing you to write native speed custom Git applications in any language which supports C bindings.
 * [NotifyOSD](https://wiki.ubuntu.com/NotifyOSD): desktop notifications framework providing a standard way of doing passive pop-up notifications on the Linux desktop.
+* [Libssh2](http://www.libssh2.org/): libssh2 is a C library that implements the SSH2 protocol and provide a support transport for **libgit2** library.
 
 ### TODO LIST
 > You can make pull requests adding the feature name
