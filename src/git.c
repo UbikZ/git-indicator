@@ -217,7 +217,7 @@ static int credential_cb (git_cred **out, const char *url,
     strcpy (id_rsa, uhome_dir);
     strcat (id_rsa, "/.ssh/id_rsa");
 
-    return git_cred_ssh_key_new(out, "git", id_rsa_pub, id_rsa, "");
+    return git_cred_ssh_key_new (out, "git", id_rsa_pub, id_rsa, "");
 }
 
 static void *download (void *ptr)

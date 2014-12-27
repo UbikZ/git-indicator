@@ -38,7 +38,7 @@ There is still room for improvement.
 > To prepare the install
 
 ```bash
-$ sudo apt-get install libgtk-2-dev libappindicator2-dev libgit2-dev libnotify-dev
+$ sudo apt-get install libgtk-2-dev libappindicator2-dev libssh2-1-dev libgit2-dev libnotify-dev
 $ git clone https://github.com/ubikz/git-indicator.git
 $ cd git-indicator
 ```
@@ -107,7 +107,10 @@ If stdout = 0, then your local master is up to date; otherwise there are commits
 
 ### Issues
 
-You might encounter an issue which should be notice you that "Too many files opened".
+You might encounter some issues.
+
+> "Too many files opened"
+
 It's all about linux file open descriptors. By default there are 2^10 per process which
 is pretty low actually. You can change this limit:
 * Change the max hard limit from 2^10 to 2^16 ```sudo echo "* hard nofile 65536" >> /etc/security/limits.conf```
@@ -115,6 +118,12 @@ is pretty low actually. You can change this limit:
 
 The service script ```/usr/local/bin/git-indicator``` (which is used to launch the indicator) uses ```ulimit```
 command to increase the number of open descriptors automatically.
+
+> "This transport isn't implemented"
+
+This error occures (in most of the cases) when you want to access to repositories with SSH network protocol.
+Then you need to check if **libssh2** library is correctly installed. If all is fine, you need to compile **libgit2**
+sources with the right version (git-indicator source code compiled for 0.20.0) and try again.
 
 ### Libraries
 
