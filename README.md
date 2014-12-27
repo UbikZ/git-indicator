@@ -135,6 +135,7 @@ sources with the right version (git-indicator source code compiled for 0.20.0) a
 ### TODO LIST
 > You can make pull requests adding the feature name
 
+* Add constant progress percentage for fetching
 * Add **no connection** icon and disable percentage then
 * Improve design for each repository status (**markup for GTK**)
 
