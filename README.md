@@ -67,6 +67,12 @@ $ make clean
 $ sudo make uninstall
 ```
 
+> Last two steps in single one
+
+```bash
+$ sudo ./rebuild
+```
+
 ### Autostart
 
 Ubuntu uses `.desktop` files to manage autostart. You may use the one provided
@@ -75,7 +81,7 @@ with the sources.
 
 ### Usage
 
-The install creates a bash script: `/usr/local/bin/git-indicator`. It is service-like script.
+The install creates a bash script: `/usr/local/bin/git-indicator`. It is a service-like script.
 You can manage the indicator with **{start|restart|stop|status}** commands.
 
 ### Change configuration
@@ -109,15 +115,14 @@ If stdout = 0, then your local master is up to date; otherwise there are commits
 
 You might encounter some issues.
 
-> "Too many files opened"
+> "Too many files opened" or "ulimit: max user processes: cannot modify limit"
 
 It's all about linux file open descriptors. By default there are 2^10 per process which
-is pretty low actually. You can change this limit:
+is pretty low actually. We have to increase it **manually**:
 * Change the max hard limit from 2^10 to 2^16 ```sudo echo "* hard nofile 65536" >> /etc/security/limits.conf```
-* Restart
 
 The service script ```/usr/local/bin/git-indicator``` (which is used to launch the indicator) uses ```ulimit```
-command to increase the number of open descriptors automatically.
+command to increase the number of open descriptors automatically (to 2^16).
 
 > "This transport isn't implemented"
 
@@ -130,7 +135,7 @@ sources with the right version (git-indicator source code compiled for 0.20.0) a
 * [App-Indicator](https://wiki.ubuntu.com/DesktopExperienceTeam/ApplicationIndicators): API for panel indicator aera support (gnome).
 * [Libgit2](https://libgit2.github.com/): portable and pure C implementation of the Git core methods provided as a re-entrant linkable library with a solid API, allowing you to write native speed custom Git applications in any language which supports C bindings.
 * [NotifyOSD](https://wiki.ubuntu.com/NotifyOSD): desktop notifications framework providing a standard way of doing passive pop-up notifications on the Linux desktop.
-* [Libssh2](http://www.libssh2.org/): libssh2 is a C library that implements the SSH2 protocol and provide a support transport for **libgit2** library.
+* [Libssh2](http://www.libssh2.org/): C library that implements the SSH2 protocol and provide a support transport for **libgit2**.
 
 ### TODO LIST
 > You can make pull requests adding the feature name
