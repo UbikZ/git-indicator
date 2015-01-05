@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# Usage
+usage() {
+  echo 'Usage : ./test [-d <gdblogfile>] [-v <valgrindlogfile>]
+        -d  gdblogfile          the logfile for gdb output
+        -v  valgrindlogfile     the logfile for valgrind output
+        -a                      append if logfile exists
+        --help                  show help
+        '
+  exit 0
+}
+
+# No param
+[ "$1" == "" ] && usage
+
+# Check if valgrind has been installed
+[ `locate -wc valgrind` -eq 0 ] && "You have to install valgrind first." && exit 0
+
+# Check if gdb has been installed
+[ `locate -wc gdb` -eq 0 ] && "You have to install gdb first" && exit 0
+
+# Init
+BASE=`dirname $0`
+VG_LOGFILE=
+GDB_LOGFILE=
+APPEND_MODE=0
+
+# Parameters reading :
+while [ ! -z $1 ]; do
+    case "$1" in
+        -v)
+            VG_LOGFILE=$2
+            shift
+            ;;
+        -d)
+            GDB_LOGFILE=$2
+            shift
+            ;;
+        -a)
+            APPEND_MODE=1
+            shift
+            ;;
+        --help)
+            usage
+            ;;
+        *)
+            echo "Wrong options, just check the usage"
+            usage
+            ;;
+    esac
+    shift
+done
+
+# Tests
+if [ "$GDB_LOGFILE" != "" ];
+then
+    echo "To be implemented"
+fi
+
+if [ "$VG_LOGFILE" != "" ];
+then
+    [ -f $BASE/$VG_LOGFILE ] && [ $APPEND_MODE -eq 1 ] && \
+    cp $VG_LOGFILE $BASE/.vg_tmp
+    valgrind --tool=memcheck --log-file=$BASE/$VG_LOGFILE --leak-check=full \
+    --show-leak-kinds=all $BASE/bin/git-indicator >/dev/null
+    cat $BASE/$VG_LOGFILE >> $BASE/.vg_tmp && mv $BASE/.vg_tmp $BASE/$VG_LOGFILE
+    echo "You can check the Valgrind logfile: $BASE/$VG_LOGFILE"
+fi

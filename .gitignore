@@ -32,5 +32,5 @@
 bin
 obj
 
-# Out
-status
+# Logs
+*.log
