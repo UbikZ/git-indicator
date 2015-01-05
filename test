@@ -67,3 +67,4 @@ then
     cat $BASE/$VG_LOGFILE >> $BASE/.vg_tmp && mv $BASE/.vg_tmp $BASE/$VG_LOGFILE
     echo "You can check the Valgrind logfile: $BASE/$VG_LOGFILE"
 fi
+exit 0
