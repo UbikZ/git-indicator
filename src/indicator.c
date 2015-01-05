@@ -57,29 +57,31 @@ static gboolean update (thdata *data)
         const char* check_ko = "[✘] ";
 
         for (i = 0; i < data->count; i++) {
-            gchar *item_label = g_strdup_printf (
-                "%s%s",
-                (data->g[i].disabled == 0)
-                    ? ((data->g[i].diffcommit > 0) ? check_ko : check_ok)
-                    : "",
-                data->g[i].repodir
-            );
-            gtk_menu_item_set_label (GTK_MENU_ITEM (item[i]), item_label);
-            g_free (item_label);
+            if (GTK_IS_MENU_ITEM (item[i])) {
+                gchar *item_label = g_strdup_printf (
+                    "%s%s",
+                    (data->g[i].disabled == 0)
+                        ? ((data->g[i].diffcommit > 0) ? check_ko : check_ok)
+                        : "",
+                    data->g[i].repodir
+                );
+                gtk_menu_item_set_label (GTK_MENU_ITEM (item[i]), item_label);
+                g_free (item_label);
 
-            if (data->g[i].disabled == 1)
-                gtk_widget_set_sensitive (item[i], FALSE);
-            else
-                gtk_widget_set_sensitive (item[i], TRUE);
+                if (data->g[i].disabled == 1)
+                    gtk_widget_set_sensitive (item[i], FALSE);
+                else
+                    gtk_widget_set_sensitive (item[i], TRUE);
 
-            if (data->g[i].diffcommit == 0) {
-                sync++;
-                data->g[i].popindisplayed = 0;
-            } else if ((data->g[i].disabled == 0)
-                       && (data->g[i].popindisplayed == 0)) {
-                sprintf (buf, "[ %d commits added ]", data->g[i].diffcommit);
-                append_notification (buf, (char*) data->g[i].repodir);
-                data->g[i].popindisplayed = 1;
+                if (data->g[i].diffcommit == 0) {
+                    sync++;
+                    data->g[i].popindisplayed = 0;
+                } else if ((data->g[i].disabled == 0)
+                           && (data->g[i].popindisplayed == 0)) {
+                    sprintf (buf, "[ %d commits added ]", data->g[i].diffcommit);
+                    append_notification (buf, (char*) data->g[i].repodir);
+                    data->g[i].popindisplayed = 1;
+                }
             }
         }
 

@@ -244,7 +244,7 @@ static void handle_errors (struct git *g, int error, char *msg, char *var,
 	if (error < 0) {
         if (debug == MODE_DEBUG) {
             char buffer[512];
-            const git_error *e = giterr_last();
+            const git_error *e = giterr_last ();
     		printf ("Error %d: %s \"%s\" (%s)\n", error, msg, var,
                      (e && e->message) ? e->message : "???");
     		strcpy (g->error_message, buffer);
