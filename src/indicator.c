@@ -15,12 +15,13 @@ static gboolean update (thdata *data);
 int init_ui (thdata *data)
 {
     GtkWidget *indicator_menu;
-    char icon_act[512], icon_att[512], *uhome_dir = getenv ("HOME");
+    char icon_act[512], icon_att[512],
+         *usr_dir = "/usr/local/share/git-indicator/img";
     int i;
-    strcpy (icon_act, uhome_dir);
-    strcat (icon_act, "/.git-indicator/app/assets/git-waiting.png");
-    strcpy (icon_att, uhome_dir);
-    strcat (icon_att, "/.git-indicator/app/assets/git-attention.png");
+    strcpy (icon_act, usr_dir);
+    strcat (icon_act, "/git-waiting.png");
+    strcpy (icon_att, usr_dir);
+    strcat (icon_att, "/git-attention.png");
 
     indicator_menu = gtk_menu_new();
 
