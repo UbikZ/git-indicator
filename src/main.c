@@ -59,9 +59,9 @@ void* listen (void *ptr)
             data->g[i].revrange = "master..origin/master";
             // -
 
-            git_threads_init();
+            git_threads_init ();
             compute_repository (&data->g[i]);
-            git_threads_shutdown();
+            git_threads_shutdown ();
         }
 
         // Unlock gtk update
