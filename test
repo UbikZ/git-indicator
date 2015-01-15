@@ -55,6 +55,7 @@ done
 # Tests
 if [ "$GDB_LOGFILE" != "" ];
 then
+    echo "To be implemented"
     #[ -f $BASE/$GDB_LOGFILE ] && [ $APPEND_MODE -eq 0 ] && rm $BASE/$GDB_LOGFILE
     #gdb -s $BASE/tests/.cmd.gdb >> $BASE/$GDB_LOGFILE
 fi
