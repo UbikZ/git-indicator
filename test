@@ -55,16 +55,16 @@ done
 # Tests
 if [ "$GDB_LOGFILE" != "" ];
 then
-    echo "To be implemented"
+    #[ -f $BASE/$GDB_LOGFILE ] && [ $APPEND_MODE -eq 0 ] && rm $BASE/$GDB_LOGFILE
+    #gdb -s $BASE/tests/.cmd.gdb >> $BASE/$GDB_LOGFILE
 fi
 
 if [ "$VG_LOGFILE" != "" ];
 then
-    [ -f $BASE/$VG_LOGFILE ] && [ $APPEND_MODE -eq 1 ] && \
-    cp $VG_LOGFILE $BASE/.vg_tmp
-    valgrind --tool=memcheck --log-file=$BASE/$VG_LOGFILE --leak-check=full \
+    [ -f $BASE/$VG_LOGFILE ] && [ $APPEND_MODE -eq 0 ] && rm $BASE/$VG_LOGFILE
+    valgrind --tool=memcheck --log-file=$BASE/.vg_tmp --leak-check=full \
     --show-leak-kinds=all $BASE/bin/git-indicator >/dev/null
-    cat $BASE/$VG_LOGFILE >> $BASE/.vg_tmp && mv $BASE/.vg_tmp $BASE/$VG_LOGFILE
+    cat $BASE/.vg_tmp >> $BASE/$VG_LOGFILE && rm $BASE/.vg_tmp
     echo "You can check the Valgrind logfile: $BASE/$VG_LOGFILE"
 fi
 exit 0
