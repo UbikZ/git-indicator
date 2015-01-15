@@ -13,7 +13,7 @@ BDIR=bin
 # Dest directories
 DBIN=/usr/local/bin
 DSHARE=/usr/local/share
-DAUTO=.config/autostart
+DAUTO=~/.config/autostart
 
 # Options
 VERB=-Wall
@@ -33,29 +33,27 @@ $(NAME): $(OBJ)
 
 configure:
 	# Create home application directory
-	[ ! -d ~/.$(NAME) ] && mkdir ~/.$(NAME)
-	# Copy autostart configuration
-	[ ! -f ~/.config/autostart/$(NAME).desktop ] && \
-	cp $(NAME).desktop ~/.config/autostart
+	mkdir ~/.$(NAME)
+
 	# Create configuration file with repositories
-	[ ! -f ~/.$(NAME)/.conf ] && \
 	find ~/ -type d -name '*.git' | sed "s/\.git//g" | \
 	egrep -v '(bundle|tests|vendor|.composer)' > ~/.$(NAME)/.conf
-	# Copy assets in /usr/local/...
-	[ ! -d $(DSHARE)/$(NAME)/img ] && mkdir -p $(DSHARE)/$(NAME)/img && \
-	cp $(ADIR)/* $(DSHARE)/$(NAME)/img
-	# Copy binary in /usr/local
-	[ ! -d $(DSHARE)/$(NAME)/bin ] && mkdir -p $(DSHARE)/$(NAME)/bin && \
-	cp $(BDIR)/* $(DSHARE)/$(NAME)/bin
+
+	# Copy autostart configuration
+	cp $(NAME).desktop $(DAUTO)
 
 install:
-	[ ! -f $(DBIN)/$(NAME) ] && cp $(NAME) $(DBIN)/$(NAME)
+	# Copy bash script
+	cp $(NAME) $(DBIN)/$(NAME)
+
+	# Copy assets in /usr/local/...
+	mkdir -p $(DSHARE)/$(NAME)/img && cp $(ADIR)/* $(DSHARE)/$(NAME)/img
+
+	# Copy binary in /usr/local
+	mkdir -p $(DSHARE)/$(NAME)/bin && cp $(BDIR)/* $(DSHARE)/$(NAME)/bin
 
 uninstall:
-	[ -d ~/.$(NAME) ] && rm -Rf ~/.$(NAME)
-	[ -f ~/.config/autostart/$(NAME).desktop ] && rm ~/.config/autostart/$(NAME).desktop
-	[ -f $(DBIN)/$(NAME) ] && rm $(DBIN)/$(NAME)
-	[ -d $(DSHARE)/$(NAME) ] && rm -rf $(DSHARE)/$(NAME)
+	rm -Rf ~/.$(NAME) $(DBIN)/$(NAME) $(DAUTO)/$(NAME).desktop $(DSHARE)/$(NAME)
 
 clean:
 	rm -f $(BDIR)/* $(ODIR)/*.o *~ $(IDIR)/*~ _*
