@@ -5,6 +5,7 @@ NAME=git-indicator
 
 # Src directories
 ADIR=assets
+SDIR=utils
 CDIR=src
 ODIR=obj
 IDIR=include
@@ -40,11 +41,11 @@ configure:
 	egrep -v '(bundle|tests|vendor|.composer)' > ~/.$(NAME)/.conf
 
 	# Copy autostart configuration
-	cp $(NAME).desktop $(DAUTO)
+	cp $(SDIR)/$(NAME).desktop $(DAUTO)
 
 install:
 	# Copy bash script
-	cp $(NAME) $(DBIN)/$(NAME)
+	cp $(SDIR)/$(NAME) $(DBIN)/$(NAME)
 
 	# Copy assets in /usr/local/...
 	mkdir -p $(DSHARE)/$(NAME)/img && cp $(ADIR)/* $(DSHARE)/$(NAME)/img

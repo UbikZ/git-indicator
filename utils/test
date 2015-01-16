@@ -21,7 +21,7 @@ usage() {
 [ `locate -wc gdb` -eq 0 ] && "You have to install gdb first" && exit 0
 
 # Init
-BASE=`dirname $0`
+BASE=`dirname $0`/..
 VG_LOGFILE=
 GDB_LOGFILE=
 APPEND_MODE=0
