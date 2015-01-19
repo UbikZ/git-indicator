@@ -58,10 +58,9 @@ void* listen (void *ptr)
             strcpy ((char*) data->g[i].repodir, repopath[i]);
             data->g[i].revrange = "master..origin/master";
             // -
-
-            git_threads_init ();
+            git_libgit2_init ();
             compute_repository (&data->g[i]);
-            git_threads_shutdown ();
+            git_libgit2_shutdown ();
         }
 
         // Unlock gtk update

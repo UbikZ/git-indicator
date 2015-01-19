@@ -32,7 +32,7 @@ static void *download (void *ptr);
 
 void compute_repository (struct git *g)
 {
-    handle_errors (g, git_repository_open_ext (&g->repo, g->repodir, 0, NULL),
+    handle_errors (g, git_repository_open (&g->repo, g->repodir),
 		           "Can't open repository", (char*) g->repodir, 1);
     if (!g->disabled)
         fetch_repository (g, FETCH_M_AUTO, debug_mode);
@@ -49,7 +49,7 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
     pthread_t worker;
 
-    handle_errors (g, git_remote_load (&remote, g->repo, loadrev),
+    handle_errors (g, git_remote_lookup (&remote, g->repo, loadrev),
                    "Can't load the remote", loadrev, debug_mode);
 
     if (!g->disabled) {
@@ -58,7 +58,7 @@ static void fetch_repository (struct git *g, short int mode, short int debug)
 
         switch (mode) {
             case FETCH_M_AUTO:
-                handle_errors (g, git_remote_fetch (remote),
+                handle_errors (g, git_remote_fetch (remote, NULL, NULL, NULL),
                                "Can't fetch repository", (char*) g->repodir,
                                debug_mode);
                 break;
@@ -227,7 +227,7 @@ static void *download (void *ptr)
     if (git_remote_connect (data->remote, GIT_DIRECTION_FETCH) < 0)
         printf ("> Can't connect for fetch");
 
-    if (git_remote_download (data->remote) < 0)
+    if (git_remote_download (data->remote, NULL) < 0)
         printf ("> Can't cownload datas for fetch");
 
     data->ret = 0;
