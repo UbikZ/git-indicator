@@ -75,7 +75,8 @@ case "$1" in
 
     status)
     if is_running; then
-        echo "Running"
+        pid=`get_pid`
+        echo "Running with pid $pid"
     else
         echo "Stopped"
         exit 1
