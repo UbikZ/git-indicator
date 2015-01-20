@@ -111,6 +111,8 @@ static void check_diff_revision (struct git *g)
             g->diffcommit = count;
         }
     }
+
+    git_revwalk_free (g->walk);
 }
 
 void close_repository (struct git *g)
