@@ -112,16 +112,16 @@ If stdout = 0, then your local master is up to date; otherwise there are commits
 You may like (at some point) disable some features because you do not want use credentials, catch errors or display OSD notifications.
 Thus I added bits field option to provide this.
 
-> Here an array of current options
+> Here a table of current options
 
-| Code                  |b2         | b10   | Description
-|---------              |--         |----   |-------------
-|MASK_LOOP              |0000 0001  |1      | Enable the main loop in `listen` thread
-|MASK_DEBUG             |0000 0010  |2      | Enable debug mode (print in stdout)
-|MASK_FETCH_AUTO        |0000 0100  |4      | Enable automatic fetch mode (**libgit**) else manual one
-|MASK_FETCH_CREDENTIALS |0000 1000  |8      | Use default ssh key credentials for private repositories
-|MASK_UPDATE_INDICATOR  |0001 0000  |16     | Enable timeout for indicator update
-|MASK_APPEND_OSD        |0010 0000  |32     | Display OSD notifications
+| Code                   | b2         | b10    | Description
+|:-------- |:--------:|:--------:| -------- 
+| MASK_LOOP              | 0000 0001  | 1      | Enable the main loop in `listen` thread
+| MASK_DEBUG             | 0000 0010  | 2      | Enable debug mode (print in stdout)
+| MASK_FETCH_AUTO        | 0000 0100  | 4      | Enable automatic fetch mode (**libgit**) else manual one
+| MASK_FETCH_CREDENTIALS | 0000 1000  | 8      | Use default ssh key credentials for private repositories
+| MASK_UPDATE_INDICATOR  | 0001 0000  | 16     | Enable timeout for indicator update
+| MASK_APPEND_OSD        | 0010 0000  | 32     | Display OSD notifications
 
 > Defaulting
 
