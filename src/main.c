@@ -76,7 +76,7 @@ void* listen (void *ptr)
 
 static void parseOptions (int argc, char **argv, thdata *data)
 {
-    data->bitprop = 62;//0xFF;
+    data->bitprop = 0xFF;
     unsigned int tmp;
     if (argc == 2) {
         tmp = (unsigned int) atoi (argv[argc-1]);
