@@ -108,15 +108,15 @@ int append_notification (char *title, char *message)
 	NotifyNotification* notification;
 	gboolean success;
 	GError *error = NULL;
-    char icon[512], *uhome_dir = getenv ("HOME");
+    char icon[512], *usr_dir = "/usr/local/share/git-indicator/img";
 
 	if (!notify_init ("git-indicator-notify"))
 		return 1;
 
 	init_caps ();
 
-    strcpy (icon, uhome_dir);
-    strcat (icon, "/.git-indicator/app/assets/git.png");
+    strcpy (icon, usr_dir);
+    strcat (icon, "/git.png");
 
 	notification = notify_notification_new (title, message, icon);
 
