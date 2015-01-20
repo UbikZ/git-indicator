@@ -8,7 +8,7 @@
 #include "git.h"
 
 void *listen(void *ptr);
-static void parseOptions (int argc, char **argv, thdata *data);
+static void parseArgv (int argc, char **argv, thdata *data);
 
 int main (int argc, char **argv)
 {
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
     int th_listen_return;
     thdata data;
 
-    parseOptions (argc, argv, &data);
+    parseArgv (argc, argv, &data);
 
     gtk_init (&argc, &argv);
 
@@ -74,7 +74,7 @@ void* listen (void *ptr)
     free (data->g);
 }
 
-static void parseOptions (int argc, char **argv, thdata *data)
+static void parseArgv (int argc, char **argv, thdata *data)
 {
     data->bitprop = 0xFF;
     unsigned int tmp;
