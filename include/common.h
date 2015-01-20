@@ -7,7 +7,7 @@
 
 // bit field mask
 #define MASK_LOOP               (1 << 0) // 0000 0001 = 1
-#define MASK_FETCH_DEBUG        (1 << 1) // 0000 0010 = 2
+#define MASK_DEBUG              (1 << 1) // 0000 0010 = 2
 #define MASK_FETCH_AUTO         (1 << 2) // 0000 0100 = 4
 #define MASK_FETCH_CREDENTIALS  (1 << 3) // 0000 1000 = 8
 #define MASK_UPDATE_INDICATOR   (1 << 4) // 0001 0000 = 16

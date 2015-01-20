@@ -72,7 +72,7 @@ static void fetch_repository (struct git *g)
                            (char*) g->repodir);
             pthread_join (worker, NULL);
 
-            if (options & MASK_FETCH_DEBUG) {
+            if (options & MASK_DEBUG) {
                 if (stats->local_objects > 0) {
                     printf ("Received %d/%d objects in %zu bytes (used %d local objects)\n",
                             stats->indexed_objects, stats->total_objects,
@@ -234,7 +234,7 @@ static void handle_errors (struct git *g, int error, char *msg, char *var)
     g->disabled = 0;
 
 	if (error < 0) {
-        if (options & MASK_FETCH_DEBUG) {
+        if (options & MASK_DEBUG) {
             const git_error *e = giterr_last ();
     		printf ("Error %d: %s \"%s\" (%s)\n", error, msg, var,
                      (e && e->message) ? e->message : "???");
