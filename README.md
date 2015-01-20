@@ -45,12 +45,9 @@ $ cd git-indicator
 
 > You may need to compile the libgit2 dependencie yourself
 
-If you want to get the **last stable version** ([here](https://github.com/libgit2/libgit2/releases)).
-You can follow [this](https://github.com/libgit2/libgit2) to compile the lib.
-**But the application is developped to be compiled/run with 0.20.0 version of libgit.
-Why this version? just because it's the one which is released in the precompiled
-package from the official repo.
-Thus, functions prototypes may have been changed.**
+I always try to use the last **stable version** of **libgit**; you can get it ([here](https://github.com/libgit2/libgit2/releases)).
+Follow [this](https://github.com/libgit2/libgit2) to compile the lib.
+**If you notice that some protypes changed because git-indicator is not up to date with libgit, just let me know by creating a new issue.**
 
 > To install git-indicator
 
@@ -67,10 +64,10 @@ $ make clean
 $ sudo make uninstall
 ```
 
-> Last two steps in single one
+> Last two steps in a single one (**quick way**)
 
 ```bash
-$ sudo ./rebuild
+$ sudo ./utils/build
 ```
 
 ### Autostart
@@ -90,7 +87,6 @@ The makefile creates default configuration looking for *.git repositories in you
 
 That's the goal of these commands:
 ```bash
-[ ! -f ~/.$(NAME)/.conf ] && \
 find ~/ -type d -name '*.git' | sed "s/\.git//g" | \
 egrep -v '(bundle|tests|vendor|.composer)' > ~/.$(NAME)/.conf
 ```
@@ -111,6 +107,39 @@ $ git rev-list master..origin/master --count
 
 If stdout = 0, then your local master is up to date; otherwise there are commits above your local branch.
 
+### Execution arguments
+
+You may like (at some point) disable some features because you do not want use credentials, catch errors or display OSD notifications.
+Thus I added bits field option to provide this.
+
+> Here an array of current options
+
+| Code                  |b2         | b10   | Description
+|---------              |--         |----   |-------------
+|MASK_LOOP              |0000 0001  |1      | Enable the main loop in `listen` thread
+|MASK_DEBUG             |0000 0010  |2      | Enable debug mode (print in stdout)
+|MASK_FETCH_AUTO        |0000 0100  |4      | Enable automatic fetch mode (**libgit**) else manual one
+|MASK_FETCH_CREDENTIALS |0000 1000  |8      | Use default ssh key credentials for private repositories
+|MASK_UPDATE_INDICATOR  |0001 0000  |16     | Enable timeout for indicator update
+|MASK_APPEND_OSD        |0010 0000  |32     | Display OSD notifications
+
+> Defaulting
+
+* If there is no arguments, **git-indicator** define **0xFF** as default (all enabled).
+* If your first arguments is greater than 0xFF, then **0xFF** is set as default
+* If there are many arguments, **0xFF** is set as default
+
+> Examples
+
+* *I want all but OSD notifications*: `$ ./bin/git-indicator 31`
+* *I want test only main loop*: `$ ./bin/git-indicator 1`
+* *I want my git-indicator w/o main loop*: `$ ./bin/git-indicator 62`
+
+### Utilities scripts
+
+We have some **scripts** which you may use (if needed).
+// to be continued
+
 ### Issues
 
 You might encounter some issues.
@@ -126,7 +155,7 @@ command to increase the number of open descriptors automatically (to 2^16).
 
 > "This transport isn't implemented"
 
-This error occures (in most of the cases) when you want to access to repositories with SSH network protocol.
+This error occurs (in most of the cases) when you want to access to repositories with SSH network protocol.
 Then you need to check if **libssh2** library is correctly installed. If all is fine, you need to compile **libgit2**
 sources with the right version (git-indicator source code compiled for 0.20.0) and try again.
 
