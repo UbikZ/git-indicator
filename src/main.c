@@ -8,12 +8,15 @@
 #include "git.h"
 
 void *listen(void *ptr);
+static void parseOptions (int argc, char **argv, thdata *data);
 
 int main (int argc, char **argv)
 {
     pthread_t th_listen;
     int th_listen_return;
     thdata data;
+
+    parseOptions (argc, argv, &data);
 
     gtk_init (&argc, &argv);
 
@@ -37,18 +40,16 @@ void* listen (void *ptr)
 {
     thdata *data;
     char *conf_file = "/.git-indicator/.conf", *uhome_dir = getenv ("HOME"),
-         *uconf_path;
+         uconf_path[128];
     data = (thdata *) ptr;
     unsigned int i;
 
-    uhome_dir = getenv ("HOME");
-    uconf_path = (char*) malloc (strlen (uhome_dir) + strlen (conf_file));
     strcpy (uconf_path, uhome_dir);
     strcat (uconf_path, conf_file);
     char **repopath = read_file (uconf_path, &data->count);
     data->g = (struct git*) malloc (data->count * sizeof (struct git));
 
-    while (1) {
+    do {
         // Lock gtk update
         data->mutex = 1;
 
@@ -59,7 +60,7 @@ void* listen (void *ptr)
             data->g[i].revrange = "master..origin/master";
             // -
             git_libgit2_init ();
-            compute_repository (&data->g[i]);
+            compute_repository (&data->g[i], data->bitprop);
             git_libgit2_shutdown ();
         }
 
@@ -67,9 +68,34 @@ void* listen (void *ptr)
         data->mutex = 0;
 
         sleep (4);
-    }
+    } while (data->bitprop & MASK_LOOP);
 
     free (repopath);
     free (data->g);
-    free (uconf_path);
+}
+
+static void parseOptions (int argc, char **argv, thdata *data)
+{
+    data->bitprop = 62;//0xFF;
+    unsigned int tmp;
+    if (argc == 2) {
+        tmp = (unsigned int) atoi (argv[argc-1]);
+        if (tmp <= data->bitprop) {
+            data->bitprop = (unsigned int) atoi (argv[argc-1]);
+        }
+    }
+
+    // Print configuration
+    if (data->bitprop & MASK_LOOP)
+        printf ("Main loop enabled\n");
+    if (data->bitprop & MASK_FETCH_DEBUG)
+        printf ("Fetch debug enabled\n");
+    if (data->bitprop & MASK_FETCH_AUTO)
+        printf ("Fetch auto enabled\n");
+    if (data->bitprop & MASK_FETCH_CREDENTIALS)
+        printf ("Fetch credentials enabled\n");
+    if (data->bitprop & MASK_UPDATE_INDICATOR)
+        printf ("Update indicator enabled\n");
+    if (data->bitprop & MASK_APPEND_OSD)
+        printf ("OSD append enabled\n");
 }

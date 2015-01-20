@@ -4,12 +4,9 @@
 #include <git2.h>
 #include <stdio.h>
 #include <string.h>
+#include "common.h"
 
 #define REPO_NAME_LEN   128
-#define FETCH_M_AUTO    1
-#define FETCH_M_MANUAL  2
-#define MODE_DEBUG      1
-#define MODE_NORMAL     0
 
 struct git
 {
@@ -25,6 +22,6 @@ struct git
     char error_message[1024];
 };
 
-void compute_repository (struct git *g);
+void compute_repository (struct git *g, unsigned int bitprop);
 
 #endif
