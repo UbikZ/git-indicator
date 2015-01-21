@@ -11,7 +11,7 @@
 struct git
 {
     git_repository *repo;
-    const char *repodir;
+    const char repodir[REPO_NAME_LEN];
     git_revwalk *walk;
     const char *revrange;
     git_status_list *status;

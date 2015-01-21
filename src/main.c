@@ -9,9 +9,11 @@
 
 void *listen(void *ptr);
 static void parseArgv (int argc, char **argv, thdata *data);
+static void initConfiguration (thdata *data);
 
 int main (int argc, char **argv)
 {
+    //system ("rm memory 2>/dev/null");
     pthread_t th_listen;
     int th_listen_return;
     thdata data;
@@ -39,39 +41,47 @@ int main (int argc, char **argv)
 void* listen (void *ptr)
 {
     thdata *data;
-    char *conf_file = "/.git-indicator/.conf", *uhome_dir = getenv ("HOME"),
-         uconf_path[128];
     data = (thdata *) ptr;
     unsigned int i;
+
+    initConfiguration (data);
+
+    git_libgit2_init ();
+
+    do {
+        // Lock gtk update
+        data->mutex = 1;
+
+        for (i = 0; i < data->count; i++)
+            compute_repository (&data->g[i], data->bitprop);
+
+        // Unlock gtk update
+        data->mutex = 0;
+        sleep (4);
+    } while (data->bitprop & MASK_LOOP);
+
+    git_libgit2_shutdown ();
+
+    free (data->g);
+}
+
+static void initConfiguration (thdata *data)
+{
+    unsigned int i;
+    char *conf_file = "/.git-indicator/.conf", *uhome_dir = getenv ("HOME"),
+          uconf_path[128];
 
     strcpy (uconf_path, uhome_dir);
     strcat (uconf_path, conf_file);
     char **repopath = read_file (uconf_path, &data->count);
     data->g = (struct git*) malloc (data->count * sizeof (struct git));
 
-    do {
-        // Lock gtk update
-        data->mutex = 1;
-
-        for (i = 0; i < data->count; i++) {
-            // Init {todo: make a function}
-            data->g[i].repodir = (char*) malloc (REPO_NAME_LEN);
-            strcpy ((char*) data->g[i].repodir, repopath[i]);
-            data->g[i].revrange = "master..origin/master";
-            // -
-            git_libgit2_init ();
-            compute_repository (&data->g[i], data->bitprop);
-            git_libgit2_shutdown ();
-        }
-
-        // Unlock gtk update
-        data->mutex = 0;
-
-        sleep (4);
-    } while (data->bitprop & MASK_LOOP);
+    for (i = 0; i < data->count; i++) {
+        strcpy ((char*) data->g[i].repodir, repopath[i]);
+        data->g[i].revrange = "master..origin/master";
+    }
 
     free (repopath);
-    free (data->g);
 }
 
 static void parseArgv (int argc, char **argv, thdata *data)
