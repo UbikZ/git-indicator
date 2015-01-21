@@ -5,7 +5,7 @@ NAME=git-indicator
 
 # Src directories
 ADIR=assets
-SDIR=utils
+SDIR=scripts
 CDIR=src
 ODIR=obj
 IDIR=include
