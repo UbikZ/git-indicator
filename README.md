@@ -67,7 +67,7 @@ $ sudo make uninstall
 > Last two steps in a single one (**quick way**)
 
 ```bash
-$ sudo ./utils/build
+$ sudo ./scripts/build
 ```
 
 ### Autostart
@@ -115,7 +115,7 @@ Thus I added bits field option to provide this.
 > Here a table of current options
 
 | Code                   | b2         | b10    | Description
-|:-------- |:--------:|:--------:| -------- 
+|:-------- |:--------:|:--------:| --------
 | MASK_LOOP              | 0000 0001  | 1      | Enable the main loop in `listen` thread
 | MASK_DEBUG             | 0000 0010  | 2      | Enable debug mode (print in stdout)
 | MASK_FETCH_AUTO        | 0000 0100  | 4      | Enable automatic fetch mode (**libgit**) else manual one
