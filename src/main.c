@@ -88,7 +88,7 @@ static void parseArgv (int argc, char **argv, thdata *data)
     // Print configuration
     if (data->bitprop & MASK_LOOP)
         printf ("Main loop enabled\n");
-    if (data->bitprop & MASK_FETCH_DEBUG)
+    if (data->bitprop & MASK_DEBUG)
         printf ("Fetch debug enabled\n");
     if (data->bitprop & MASK_FETCH_AUTO)
         printf ("Fetch auto enabled\n");
