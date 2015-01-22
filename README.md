@@ -67,7 +67,7 @@ $ sudo make uninstall
 > Last two steps in a single one (**quick way**)
 
 ```bash
-$ sudo ./scripts/build
+$ ./scripts/build
 ```
 
 ### Autostart
