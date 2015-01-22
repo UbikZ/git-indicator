@@ -5,12 +5,6 @@
 #include "git.h"
 #include "file.h"
 
-static struct dl_data {
-    git_remote *remote;
-    int ret;
-    int finished;
-};
-
 static short int options;
 
 //
@@ -27,7 +21,6 @@ static void revwalk_parse_options (struct git *g);
 static int credential_cb (git_cred **out, const char *url,
                           const char *username_from_url,
                           unsigned int allowed_types, void *payload);
-static void *download (void *ptr);
 
 void compute_repository (struct git *g, unsigned int bitprop)
 {
@@ -44,10 +37,7 @@ static void fetch_repository (struct git *g)
 {
     git_remote *remote = NULL;
     char *loadrev = "origin";
-    const git_transfer_progress *stats;
-    struct dl_data data;
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
-    pthread_t worker;
 
     handle_errors (g, git_remote_lookup (&remote, g->repo, loadrev),
                    "Can't load the remote", loadrev);
@@ -58,32 +48,8 @@ static void fetch_repository (struct git *g)
             git_remote_set_callbacks (remote, &callbacks);
         }
 
-        if (options & MASK_FETCH_AUTO) {
-            handle_errors (g, git_remote_fetch (remote, NULL, NULL, NULL),
-                           "Can't fetch repository", (char*) g->repodir);
-        } else {
-            data.remote = remote;
-            data.ret = 0;
-            data.finished = 0;
-
-            stats = git_remote_stats (remote);
-            pthread_create (&worker, NULL, download, &data);
-            handle_errors (g, data.ret, "Fail downloading datas",
-                           (char*) g->repodir);
-            pthread_join (worker, NULL);
-
-            if (options & MASK_DEBUG) {
-                if (stats->local_objects > 0) {
-                    printf ("Received %d/%d objects in %zu bytes (used %d local objects)\n",
-                            stats->indexed_objects, stats->total_objects,
-                            stats->received_bytes, stats->local_objects);
-                } else {
-                    printf ("Received %d/%d objects in %zu bytes\n",
-                            stats->indexed_objects, stats->total_objects,
-                            stats->received_bytes);
-                }
-            }
-        }
+        handle_errors (g, git_remote_fetch (remote, NULL, NULL, NULL),
+                       "Can't fetch repository", (char*) g->repodir);
 
         if (!g->disabled)
             check_diff_revision (g);
@@ -211,22 +177,6 @@ static int credential_cb (git_cred **out, const char *url,
     strcat (id_rsa, "/.ssh/id_rsa");
 
     return git_cred_ssh_key_new (out, "git", id_rsa_pub, id_rsa, "");
-}
-
-static void *download (void *ptr)
-{
-    struct dl_data *data = (struct dl_data *) ptr;
-
-    if (git_remote_connect (data->remote, GIT_DIRECTION_FETCH) < 0)
-        printf ("> Can't connect for fetch");
-
-    if (git_remote_download (data->remote, NULL) < 0)
-        printf ("> Can't cownload datas for fetch");
-
-    data->ret = 0;
-    data->finished = 1;
-
-    return &data->ret;
 }
 
 static void handle_errors (struct git *g, int error, char *msg, char *var)
