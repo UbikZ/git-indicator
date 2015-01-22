@@ -32,5 +32,6 @@
 bin
 obj
 
-# Logs
+# Others
 *.log
+*.dat
