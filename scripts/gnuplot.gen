@@ -1,0 +1,20 @@
+#!/bin/sh
+# To plot: `gnuplot -p -e 'plot <my_file>'`
+
+base=`dirname $0`
+count=0
+out=$base/.gnuplot
+
+rm $out.* 2>/dev/null
+
+while true
+do
+    echo -n $count >> $out.vsz.dat
+    echo -n $count >> $out.rss.dat
+    ps auwx | grep git-indicator | \
+    grep -v grep | awk -F " " '{printf(" %d\n", $5)}' >> $out.vsz.dat
+    ps auwx | grep git-indicator | \
+    grep -v grep | awk -F " " '{printf(" %d\n", $6)}' >> $out.rss.dat
+    sleep 10
+    count=`expr $count + 1`
+done
