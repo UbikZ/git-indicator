@@ -34,4 +34,4 @@ obj
 
 # Others
 *.log
-*.dat
+*.dat*
