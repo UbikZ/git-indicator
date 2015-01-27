@@ -1,5 +1,5 @@
 #!/bin/sh
-# To plot: `gnuplot -p -e 'plot <my_file>'`
+# To plot: gnuplot -p -e "set title 'VSZ and RSS memory usage over time'; set xlabel 'Time (/10s)'; set ylabel 'Octets'; plot '<file1>', '<file2>'"
 
 base=`dirname $0`
 count=0
