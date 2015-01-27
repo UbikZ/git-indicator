@@ -13,7 +13,6 @@ static void initConfiguration (thdata *data);
 
 int main (int argc, char **argv)
 {
-    //system ("rm memory 2>/dev/null");
     pthread_t th_listen;
     int th_listen_return;
     thdata data;
@@ -57,7 +56,7 @@ void* listen (void *ptr)
 
         // Unlock gtk update
         data->mutex = 0;
-        sleep (4);
+        sleep (60);
     } while (data->bitprop & MASK_LOOP);
 
     git_libgit2_shutdown ();
