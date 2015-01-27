@@ -131,7 +131,7 @@ Thus I added bits field option to provide this.
 
 > Examples
 
-* *I want all but OSD notifications*: `$ ./bin/git-indicator 31`
+* *I want all except OSD notifications*: `$ ./bin/git-indicator 31`
 * *I want test only main loop*: `$ ./bin/git-indicator 1`
 * *I want my git-indicator w/o main loop*: `$ ./bin/git-indicator 62`
 
