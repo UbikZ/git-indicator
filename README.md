@@ -169,10 +169,12 @@ sources with the right version (git-indicator source code compiled for 0.20.0) a
 ### TODO LIST
 > You can make pull requests adding the feature name
 
-* Change bitfield system by posix system (check [this](http://www.gnu.org/software/libc/manual/html_node/Getopt.html))
-* Add constant progress percentage for fetching
+* Add repository information on click (and set local/remote branch comparison)
+* Add `git pull origin <branch>` action for each repository feature
+* Add more information into the OSD notification (last commit user etc.)
 * Add **no connection** icon and disable percentage then
 * Improve design for each repository status (**markup for GTK**)
+* Change bitfield system by posix system (check [this](http://www.gnu.org/software/libc/manual/html_node/Getopt.html))
 
 ### Ubuntu Package
 
