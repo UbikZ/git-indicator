@@ -5,6 +5,6 @@ pid=`git-indicator pid`
 
 [ "$pid" = "" ] && exit 0
 
-rss=`cat /proc/$pid/status | grep VmRSS | awk -F " " '{ printf $2}'`
+rss=`awk -F " " '/VmRSS/{ printf $2 }' /proc/$pid/status`
 
 [ $rss -ge 60000 ] && git-indicator restart
