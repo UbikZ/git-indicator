@@ -4,7 +4,9 @@ name=`basename $0`
 
 homedir=~/.$name
 log=$homedir/log
-cmd=/usr/local/share/$name/bin/$name
+app_share=/usr/local/share/$name
+cmd=$app_share/bin/$name
+cron=$app_share/scripts/$name.cron
 
 pid_file=$log/$name.pid
 stdout_log=$log/access.log
@@ -83,8 +85,16 @@ case "$1" in
     fi
     ;;
 
+    pid)
+    if is_running; then
+        pid=`get_pid`
+        echo "$pid"
+    fi
+    ;;
+
+
     *)
-    echo "Usage: $0 {start|stop|restart|status}"
+    echo "Usage: $0 {start|stop|restart|status|pid}"
     exit 1
     ;;
 
