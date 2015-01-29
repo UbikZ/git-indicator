@@ -14,6 +14,7 @@ BDIR=bin
 # Dest directories
 DBIN=/usr/local/bin
 DSHARE=/usr/local/share
+DCRON=/etc/cron.hourly
 DAUTO=~/.config/autostart
 
 # Options
@@ -47,14 +48,19 @@ install:
 	# Copy bash script
 	cp $(SDIR)/$(NAME) $(DBIN)/$(NAME)
 
+
+	# Copy cron for hourly update
+	cp $(SDIR)/$(NAME).cron $(DCRON)
+
 	# Copy assets in /usr/local/...
 	mkdir -p $(DSHARE)/$(NAME)/img && cp $(ADIR)/* $(DSHARE)/$(NAME)/img
 
-	# Copy binary in /usr/local
+	# Copy binary & scripts in /usr/local/...
 	mkdir -p $(DSHARE)/$(NAME)/bin && cp $(BDIR)/* $(DSHARE)/$(NAME)/bin
 
 uninstall:
-	rm -Rf ~/.$(NAME) $(DBIN)/$(NAME) $(DAUTO)/$(NAME).desktop $(DSHARE)/$(NAME)
+	rm -Rf ~/.$(NAME) $(DBIN)/$(NAME) $(DAUTO)/$(NAME).desktop \
+	$(DSHARE)/$(NAME) $(DCRON)/$(NAME).cron
 
 clean:
 	rm -f $(BDIR)/* $(ODIR)/*.o *~ $(IDIR)/*~ _*

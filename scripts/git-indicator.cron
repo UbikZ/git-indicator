@@ -1,0 +1,10 @@
+#!/bin/sh
+# To be added in cron file
+
+pid=`git-indicator pid`
+
+[ "$pid" = "" ] && exit 0
+
+rss=`cat /proc/$pid/status | grep VmRSS | awk -F " " '{ printf $2}'`
+
+[ $rss -ge 60000 ] && git-indicator restart
