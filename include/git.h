@@ -16,9 +16,11 @@ struct git
     const char *revrange;
     git_status_list *status;
     git_status_options statusopt;
+    int diffcommit_last;
     int diffcommit;
-    short int disabled;
-    short int popindisplayed;
+    short unsigned int disabled;
+    short unsigned int popindisplayed;
+    short unsigned int popinfirst;
     char error_message[1024];
 };
 

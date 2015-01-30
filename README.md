@@ -122,6 +122,7 @@ Thus I added bits field option to provide this.
 | MASK_FETCH_CREDENTIALS | 0000 1000  | 8      | Use default ssh key credentials for private repositories
 | MASK_UPDATE_INDICATOR  | 0001 0000  | 16     | Enable timeout for indicator update
 | MASK_APPEND_OSD        | 0010 0000  | 32     | Display OSD notifications
+| MASK_ASREAD_OSD        | 0100 0000  | 64     | Mark OSD notifs as read
 
 > Defaulting
 

@@ -28,10 +28,11 @@ int init_ui (thdata *data)
     if (data->count > 0) {
         item = (GtkWidget **) malloc (data->count * sizeof (GtkWidget*));
         for (i = 0; i < data->count; i++) {
+            data->g[i].popinfirst = 0;
             item[i] = gtk_image_menu_item_new_with_label ("");
             gtk_menu_shell_append (GTK_MENU_SHELL (indicator_menu), item[i]);
         }
-        
+
         GtkWidget *sep = gtk_separator_menu_item_new ();
         gtk_menu_shell_append (GTK_MENU_SHELL (indicator_menu), sep);
         gtk_widget_show_all (indicator_menu);
@@ -80,12 +81,19 @@ static gboolean update (thdata *data)
                 if (data->g[i].diffcommit == 0) {
                     sync++;
                     data->g[i].popindisplayed = 0;
-                } else if ((data->g[i].disabled == 0) &&
-                           (data->g[i].popindisplayed == 0) &&
+                } else if (data->g[i].disabled == 0 &&
                             data->bitprop & MASK_APPEND_OSD) {
-                    sprintf (buf, "[ %d commits added ]", data->g[i].diffcommit);
-                    append_notification (buf, (char*) data->g[i].repodir);
-                    data->g[i].popindisplayed = 1;
+                    if (!(data->bitprop & MASK_ASREAD_OSD) &&
+                            (data->g[i].popinfirst == 0)) {
+                        data->g[i].popindisplayed = 1;
+                        data->g[i].popinfirst = 1;
+                    }
+
+                    if (data->g[i].popindisplayed == 0) {
+                        sprintf (buf, "[ %d commits added ]", data->g[i].diffcommit);
+                        append_notification (buf, (char*) data->g[i].repodir);
+                        data->g[i].popindisplayed = 1;
+                    }
                 }
             }
         }

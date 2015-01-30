@@ -107,4 +107,6 @@ static void parseArgv (int argc, char **argv, thdata *data)
         printf ("Update indicator enabled\n");
     if (data->bitprop & MASK_APPEND_OSD)
         printf ("OSD append enabled\n");
+    if (data->bitprop & MASK_ASREAD_OSD)
+        printf ("OSD defined asread\n");
 }

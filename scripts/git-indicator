@@ -9,11 +9,16 @@ cmd=$app_share/bin/$name
 cron=$app_share/scripts/$name.cron
 
 pid_file=$log/$name.pid
+arg_file=$log/$name.arg
 stdout_log=$log/access.log
 stderr_log=$log/error.err
 
 get_pid() {
     cat "$pid_file"
+}
+
+get_arg() {
+    cat "$arg_file"
 }
 
 is_running() {
@@ -28,8 +33,9 @@ case "$1" in
     else
         echo "Starting $name"
         [ ! -d $log ] && mkdir -p $log
+        echo "" > "$arg_file"
         cd $homedir
-        ulimit -n 65536 && $cmd >> "$stdout_log" 2>> "$stderr_log" &
+        ulimit -n 65536 && $cmd `get_arg` >> "$stdout_log" 2>> "$stderr_log" &
         echo $! > "$pid_file"
         if ! is_running; then
             echo "Unable to start, see $stdout_log and $stderr_log"
@@ -72,7 +78,9 @@ case "$1" in
         echo "Unable to stop, will not attempt to start"
         exit 1
     fi
+    [ -d $log ] && echo "63" > "$arg_file"
     $0 start
+    [ -d $log ] && echo "" > "$arg_file"
     ;;
 
     status)
