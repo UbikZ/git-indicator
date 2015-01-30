@@ -47,7 +47,7 @@ int init_ui (thdata *data)
 
         update (data);
         if (data->bitprop & MASK_UPDATE_INDICATOR)
-            g_timeout_add (1000, (GtkFunction) update, data);
+            g_timeout_add (TIMEOUT_DELTA * 1000, (GtkFunction) update, data);
     }
 
     return 0;
@@ -83,12 +83,18 @@ static gboolean update (thdata *data)
                     data->g[i].popindisplayed = 0;
                 } else if (data->g[i].disabled == 0 &&
                             data->bitprop & MASK_APPEND_OSD) {
+                    // Don't show current sync resume about repository situation
                     if (!(data->bitprop & MASK_ASREAD_OSD) &&
                             (data->g[i].popinfirst == 0)) {
                         data->g[i].popindisplayed = 1;
                         data->g[i].popinfirst = 1;
                     }
 
+                    // We enable notification if diff between last & current commits
+                    if (data->g[i].diffcommit != data->g[i].diffcommit_last)
+                        data->g[i].popindisplayed = 0;
+
+                    // Add notification
                     if (data->g[i].popindisplayed == 0) {
                         sprintf (buf, "[ %d commits added ]", data->g[i].diffcommit);
                         append_notification (buf, (char*) data->g[i].repodir);

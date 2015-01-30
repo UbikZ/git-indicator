@@ -64,6 +64,8 @@ static void check_diff_revision (struct git *g)
     git_oid oid;
     int count = 0;
 
+    g->diffcommit_last = g->diffcommit;
+
     handle_errors (g, git_revwalk_new (&g->walk, g->repo),
                    "Can't allocate revwalk", (char*) g->repodir);
 

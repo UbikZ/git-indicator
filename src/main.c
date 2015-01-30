@@ -56,7 +56,7 @@ void* listen (void *ptr)
 
         // Unlock gtk update
         data->mutex = 0;
-        sleep (60);
+        sleep (TIMEOUT_DELTA);
     } while (data->bitprop & MASK_LOOP);
 
     git_libgit2_shutdown ();

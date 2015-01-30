@@ -4,6 +4,7 @@
 #include "git.h"
 
 #define REALLOC_DELTA 10
+#define TIMEOUT_DELTA 60
 
 // bit field mask
 #define MASK_LOOP               (1 << 0) // 0000 0001 = 1
