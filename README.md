@@ -170,6 +170,7 @@ sources with the right version (git-indicator source code compiled for 0.20.0) a
 ### TODO LIST
 > You can make pull requests adding the feature name
 
+* Change GTK version from 2.x to 3.x
 * Add repository information on click (and set local/remote branch comparison)
 * Add `git pull origin <branch>` action for each repository feature
 * Add more information into the OSD notification (last commit user etc.)
