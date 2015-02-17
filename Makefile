@@ -48,15 +48,13 @@ install:
 	# Copy bash script
 	cp $(SDIR)/$(NAME) $(DBIN)/$(NAME)
 
-
-	# Copy cron for hourly update
-	cp $(SDIR)/$(NAME).cron $(DCRON)
-
 	# Copy assets in /usr/local/...
 	mkdir -p $(DSHARE)/$(NAME)/img && cp $(ADIR)/* $(DSHARE)/$(NAME)/img
 
 	# Copy binary & scripts in /usr/local/...
-	mkdir -p $(DSHARE)/$(NAME)/bin && cp $(BDIR)/* $(DSHARE)/$(NAME)/bin
+	mkdir -p $(DSHARE)/$(NAME)/bin && \
+	cp $(BDIR)/* $(DSHARE)/$(NAME)/bin && \
+	cp $(SDIR)/$(NAME).cron $(DSHARE)/$(NAME)/bin
 
 uninstall:
 	rm -Rf ~/.$(NAME) $(DBIN)/$(NAME) $(DAUTO)/$(NAME).desktop \

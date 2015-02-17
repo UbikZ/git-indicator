@@ -6,9 +6,10 @@ homedir=~/.$name
 log=$homedir/log
 app_share=/usr/local/share/$name
 cmd=$app_share/bin/$name
-cron=$app_share/scripts/$name.cron
+cron=$app_share/bin/$name.cron
 
 pid_file=$log/$name.pid
+cron_pid_file=$log/$name.cron.pid
 arg_file=$log/$name.arg
 stdout_log=$log/access.log
 stderr_log=$log/error.err
@@ -17,12 +18,20 @@ get_pid() {
     cat "$pid_file"
 }
 
+get_cron_pid() {
+    cat "$cron_pid_file"
+}
+
 get_arg() {
     cat "$arg_file"
 }
 
 is_running() {
     [ -f "$pid_file" ] && ps `get_pid` > /dev/null 2>&1
+}
+
+is_cron_running() {
+    [ -f "$cron_pid_file" ] && ps `get_cron_pid` > /dev/null 2>&1
 }
 
 case "$1" in
@@ -37,6 +46,8 @@ case "$1" in
         cd $homedir
         ulimit -n 65536 && $cmd `get_arg` >> "$stdout_log" 2>> "$stderr_log" &
         echo $! > "$pid_file"
+        $cron >/dev/null &
+        echo $! > "$cron_pid_file"
         if ! is_running; then
             echo "Unable to start, see $stdout_log and $stderr_log"
             exit 1
@@ -47,7 +58,7 @@ case "$1" in
     stop)
     if is_running; then
         echo -n "Stopping $name.."
-        kill `get_pid`
+        kill -9 `get_pid` && kill -9 `get_cron_pid`
         for i in {1..10}; do
             if ! is_running;
                 then break
@@ -62,11 +73,23 @@ case "$1" in
             echo "Not stopped; may still be shutting down or shutdown may have failed"
             exit 1
         else
-            echo "Stopped"
+            echo "> Application stopped"
             if [ -f "$pid_file" ]; then
                 rm "$pid_file"
             fi
         fi
+
+        if is_cron_running; then
+            echo "Cron still running"
+            exit 1
+        else
+            echo "> Cron stopped"
+            if [ -f "$cron_pid_file" ]; then
+                rm "$cron_pid_file"
+            fi
+        fi
+        pkill notify-osd
+        echo "> Notify OSD stopped"
     else
         echo "Not running"
     fi
@@ -86,11 +109,19 @@ case "$1" in
     status)
     if is_running; then
         pid=`get_pid`
-        echo "Running with pid $pid"
+        echo "Git-Indicator App running with pid $pid"
     else
         echo "Stopped"
         exit 1
     fi
+    if is_cron_running; then
+        cront_pid=`get_cron_pid`
+        echo "Git-Indicator Cron running with pid $cront_pid"
+    else
+        echo "Stopped"
+        exit 1
+    fi
+
     ;;
 
     pid)
@@ -98,6 +129,14 @@ case "$1" in
         pid=`get_pid`
         echo "$pid"
     fi
+    ;;
+
+    access)
+        cat "$stdout_log"
+    ;;
+
+    error)
+        cat "$stderr_log"
     ;;
 
 

@@ -1,10 +1,14 @@
 #!/bin/sh
-# To be added in cron file
 
-pid=`git-indicator pid`
+while true
+do
+    pid=`git-indicator pid`
 
-[ "$pid" = "" ] && exit 0
+    [ "$pid" = "" ] && exit 0
 
-rss=`awk -F " " '/VmRSS/{ printf $2 }' /proc/$pid/status`
+    rss=`awk -F " " '/VmRSS/{ printf $2 }' /proc/$pid/status`
 
-[ $rss -ge 60000 ] && git-indicator restart
+    [ $rss -ge 60000 ] && git-indicator restart
+
+    sleep 5
+done
