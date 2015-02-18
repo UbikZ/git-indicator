@@ -131,6 +131,23 @@ case "$1" in
     fi
     ;;
 
+    memory)
+        while true
+        do
+            date=`date`
+            app_pid=`get_pid`
+            app_rss=`awk -F " " '/VmRSS/{ printf $2 }' /proc/$app_pid/status`
+            app_vsz=`awk -F " " '/VmSize/{ printf $2 }' /proc/$app_pid/status`
+            cron_pid=`get_cron_pid`
+            cron_rss=`awk -F " " '/VmRSS/{ printf $2 }' /proc/$cron_pid/status`
+            cron_vsz=`awk -F " " '/VmSize/{ printf $2 }' /proc/$cron_pid/status`
+            echo "--- $date"
+            echo "> Application: VmSize= $app_vsz KiB / VmRSS= $app_rss"
+            echo "> Cron: VmSize= $cron_vsz KiB / VmRSS= $cron_rss"
+            sleep 2
+        done
+    ;;
+
     access)
         cat "$stdout_log"
     ;;
@@ -141,7 +158,7 @@ case "$1" in
 
 
     *)
-    echo "Usage: $0 {start|stop|restart|status|pid}"
+    echo "Usage: $0 {start|stop|restart|status|pid|memory|access|error}"
     exit 1
     ;;
 
