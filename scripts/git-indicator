@@ -123,6 +123,11 @@ case "$1" in
     fi
     ;;
 
+    pid)
+        pid=`get_pid`
+        echo "$pid"
+    ;;
+
     memory)
         while true
         do
@@ -150,7 +155,7 @@ case "$1" in
 
 
     *)
-    echo "Usage: $0 {start|stop|restart|status|memory|access|error}"
+    echo "Usage: $0 {start|stop|restart|status|pid|memory|access|error}"
     exit 1
     ;;
 
