@@ -144,7 +144,7 @@ case "$1" in
             echo "--- $date"
             echo "> Application: VmSize= $app_vsz KiB / VmRSS= $app_rss"
             echo "> Cron: VmSize= $cron_vsz KiB / VmRSS= $cron_rss"
-            sleep 2
+            sleep 5
         done
     ;;
 
