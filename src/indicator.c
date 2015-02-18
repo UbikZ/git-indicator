@@ -83,16 +83,17 @@ static gboolean update (thdata *data)
                     data->g[i].popindisplayed = 0;
                 } else if (data->g[i].disabled == 0 &&
                             data->bitprop & MASK_APPEND_OSD) {
+
+                    // We enable notification if diff between last & current commits
+                    if (data->g[i].diffcommit != data->g[i].diffcommit_last)
+                        data->g[i].popindisplayed = 0;
+
                     // Don't show current sync resume about repository situation
                     if (!(data->bitprop & MASK_ASREAD_OSD) &&
                             (data->g[i].popinfirst == 0)) {
                         data->g[i].popindisplayed = 1;
                         data->g[i].popinfirst = 1;
                     }
-
-                    // We enable notification if diff between last & current commits
-                    if (data->g[i].diffcommit != data->g[i].diffcommit_last)
-                        data->g[i].popindisplayed = 0;
 
                     // Add notification
                     if (data->g[i].popindisplayed == 0) {
