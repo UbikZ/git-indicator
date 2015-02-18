@@ -4,7 +4,7 @@ An indicator for the Unity panel that show sync percentage of all your git repos
 
 `git-indicator` makes fetch and diff from master to origin/master for each repository in order to check differences.
 
-## Screenshots
+## Screenshots 
 
 Panel showing synchronisation in progress.
 
