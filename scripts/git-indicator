@@ -153,7 +153,6 @@ case "$1" in
         cat "$stderr_log"
     ;;
 
-
     *)
     echo "Usage: $0 {start|stop|restart|status|pid|memory|access|error}"
     exit 1
