@@ -121,14 +121,6 @@ case "$1" in
         echo "Stopped"
         exit 1
     fi
-
-    ;;
-
-    pid)
-    if is_running; then
-        pid=`get_pid`
-        echo "$pid"
-    fi
     ;;
 
     memory)
@@ -158,7 +150,7 @@ case "$1" in
 
 
     *)
-    echo "Usage: $0 {start|stop|restart|status|pid|memory|access|error}"
+    echo "Usage: $0 {start|stop|restart|status|memory|access|error}"
     exit 1
     ;;
 
