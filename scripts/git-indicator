@@ -14,6 +14,15 @@ arg_file=$log/$name.arg
 stdout_log=$log/access.log
 stderr_log=$log/error.err
 
+# colors
+green="\\033[1;32m"
+default="\\033[0;39m"
+red="\\033[1;31m"
+pink="\\033[1;35m"
+blue="\\033[1;34m"
+white="\\033[0;02m"
+yellow="\\033[1;33m"
+
 get_pid() {
     cat "$pid_file"
 }
@@ -38,18 +47,19 @@ case "$1" in
 
     start)
     if is_running; then
-        echo "Already started"
+        echo "$yellow" "Already started"
     else
-        echo "Starting $name"
+        arg=`get_arg`
+        echo "$green" "Starting $name [" "$blue" "$arg" "$green]"
         [ ! -d $log ] && mkdir -p $log
-        echo "" > "$arg_file"
         cd $homedir
-        ulimit -n 65536 && $cmd `get_arg` >> "$stdout_log" 2>> "$stderr_log" &
+        ulimit -n 65536 && $cmd $arg >> "$stdout_log" 2>> "$stderr_log" &
+        echo "" > "$arg_file"
         echo $! > "$pid_file"
         $cron >/dev/null &
         echo $! > "$cron_pid_file"
         if ! is_running; then
-            echo "Unable to start, see $stdout_log and $stderr_log"
+            echo "$yellow" "Unable to start, see $stdout_log and $stderr_log"
             exit 1
         fi
     fi
@@ -57,7 +67,7 @@ case "$1" in
 
     stop)
     if is_running; then
-        echo -n "Stopping $name.."
+        echo -n "$red" "Stopping $name.."
         kill -9 `get_pid` && kill -9 `get_cron_pid`
         for i in {1..10}; do
             if ! is_running;
@@ -70,55 +80,55 @@ case "$1" in
         echo
 
         if is_running; then
-            echo "Not stopped; may still be shutting down or shutdown may have failed"
+            echo "$yellow Not stopped; may still be shutting down or shutdown may have failed"
             exit 1
         else
-            echo "> Application stopped"
+            echo "$red>$default Application stopped"
             if [ -f "$pid_file" ]; then
                 rm "$pid_file"
             fi
         fi
 
         if is_cron_running; then
-            echo "Cron still running"
+            echo "$yellow Cron still running"
             exit 1
         else
-            echo "> Cron stopped"
+            echo "$red>$default" "Cron stopped"
             if [ -f "$cron_pid_file" ]; then
                 rm "$cron_pid_file"
             fi
         fi
         pkill notify-osd
-        echo "> Notify OSD stopped"
+        echo "$red>$default" "Notify OSD stopped"
     else
-        echo "Not running"
+        echo "$default" "Not running"
     fi
+    rm "$arg_file"
     ;;
 
     restart)
     $0 stop
     if is_running; then
-        echo "Unable to stop, will not attempt to start"
+        echo "$yellow" "Unable to stop, will not attempt to start"
         exit 1
     fi
     [ -d $log ] && echo "63" > "$arg_file"
     $0 start
-    [ -d $log ] && echo "" > "$arg_file"
     ;;
 
     status)
     if is_running; then
         pid=`get_pid`
-        echo "Git-Indicator App running with pid $pid"
+        echo "$blue" "Git-Indicator" "$default" "App running with pid" "$green" "$pid"
     else
-        echo "Stopped"
+        echo "$red" "Stopped"
         exit 1
     fi
     if is_cron_running; then
         cront_pid=`get_cron_pid`
-        echo "Git-Indicator Cron running with pid $cront_pid"
+        echo "$blue" "Git-Indicator" "$default" "Cron running with pid" "$green" "$cront_pid"
     else
-        echo "Stopped"
+        echo "$red" "Stopped"
         exit 1
     fi
     ;;
@@ -138,9 +148,9 @@ case "$1" in
             cron_pid=`get_cron_pid`
             cron_rss=`awk -F " " '/VmRSS/{ printf $2 }' /proc/$cron_pid/status`
             cron_vsz=`awk -F " " '/VmSize/{ printf $2 }' /proc/$cron_pid/status`
-            echo "--- $date"
-            echo "> Application: VmSize= $app_vsz KiB / VmRSS= $app_rss"
-            echo "> Cron: VmSize= $cron_vsz KiB / VmRSS= $cron_rss"
+            echo "--- $yellow" "$date" "$default"
+            echo "> $blue" "Application" "$default" ": VmSize=" "$green" "$app_vsz" "$default" "KiB / VmRSS=" "$green" "$app_rss" "$default" "KiB"
+            echo "> $blue" "Cron" "$default" ": VmSize=" "$green" "$cron_vsz" "$default" "KiB / VmRSS=" "$green" "$cron_rss" "$default" "KiB"
             sleep 5
         done
     ;;
