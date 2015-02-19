@@ -52,6 +52,7 @@ case "$1" in
         arg=`get_arg`
         echo "$green" "Starting $name [" "$blue" "$arg" "$green]"
         [ ! -d $log ] && mkdir -p $log
+        [ ! -f $arg] && touch $arg
         cd $homedir
         ulimit -n 65536 && $cmd $arg >> "$stdout_log" 2>> "$stderr_log" &
         echo "" > "$arg_file"
@@ -68,7 +69,8 @@ case "$1" in
     stop)
     if is_running; then
         echo -n "$red" "Stopping $name.."
-        kill -9 `get_pid` && kill -9 `get_cron_pid`
+        kill -9 `get_pid`
+        kill -9 `get_cron_pid` 2>/dev/null
         for i in {1..10}; do
             if ! is_running;
                 then break
