@@ -4,7 +4,7 @@ while true
 do
     pid=`git-indicator pid`
 
-    [ "$pid" = "" ] && exit 0
+    [ -f "/proc/$pid/status" ] && exit 0
 
     rss=`awk -F " " '/VmRSS/{ printf $2 }' /proc/$pid/status`
 
